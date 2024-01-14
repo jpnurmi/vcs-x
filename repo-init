@@ -2,4 +2,31 @@
 
 set -e
 
-repo init "$@"
+url="$REPO_X_URL"
+branch="$REPO_X_BRANCH"
+mirror="$REPO_X_MIRROR"
+
+opts=""
+for opt in "$@"; do
+    case "$opt" in
+        -u|--manifest-url|--manifest-url=*)
+            url=""
+            ;;
+        -b|--manifest-branch|--manifest-branch=*)
+            branch=""
+            ;;
+        --mirror|--reference|--reference=*)
+            mirror=""
+            ;;
+        *)
+            opts="$opts $opt"
+            ;;
+    esac
+done
+
+args=(--no-repo-verify)
+[ -n "$url" ] && args+=(-u "$url")
+[ -n "$branch" ] && args+=(-b "$branch")
+[ -n "$mirror" ] && args+=(--reference "$mirror")
+
+repo init "${args[@]}" "$@"

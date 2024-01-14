@@ -74,7 +74,10 @@ $ repo-status
 
 ### `repo-init`
 
-`repo init` with auto-completion.
+`repo init` with auto-completion and support for the following environment variables:
+- `REPO_X_URL` (manifest URL)
+- `REPO_X_BRANCH` (manifest branch)
+- `REPO_X_MIRROR` (mirror path)
 
 ```sh
 $ repo-init -<TAB><TAB>
