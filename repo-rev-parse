@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -e
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<ref=HEAD>]"
+    echo ""
+    echo "Runs 'git rev-parse' for HEAD/ref in all projects."
+    echo ""
+    echo "Can be combined with 'repo-checkout'. For example:"
+    echo "$ $(basename $0) > sha1.txt"
+    echo "$ repo-checkout sha1.txt"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@")
+[ $? -eq 0 ] || usage 1
+eval set -- "$opts"
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+arg="${1:-HEAD}"
+
+repo forall -c 'echo $REPO_PATH $(git rev-parse '"$arg"')'

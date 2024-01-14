@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+function usage() {
+    echo "Usage: $(basename $0) [options]"
+    echo ""
+    echo "Runs 'git reset' in all projects."
+    echo ""
+    echo "For example:"
+    echo "$ $(basename $0) --hard"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+opts="$@"
+for opt in "$opts"; do
+    case "$opt" in
+        -h|--help)
+            usage
+            ;;
+    esac
+done
+
+repo forall -c "git reset $opts" --

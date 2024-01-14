@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+repo sync -c --retry-fetches=5 --no-tags "$@"

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+set -e
+
+verbose=false
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<projects>]"
+    echo ""
+    echo "Runs 'git branch' in all/specified projects."
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "-v,--verbose"
+    exit $1
+}
+
+opts=$(getopt --options "hv" --longoptions "help,verbose" --name "$(basename $0)" -- "$@")
+[ $? -eq 0 ] || usage 1
+eval set -- "$opts"
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        -v|--verbose)
+            verbose=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+if [ $verbose = true ] || [ $# -gt 0 ]; then
+    repo forall "$@" -c 'b=$(git branch --show-current); [[ -n "$b" ]] && echo -e "\\033[0;31m$REPO_PROJECT\\033[0m $b" || echo -e "\\033[0;32m$REPO_PROJECT\\033[0m no branch"'
+else
+    repo forall -c 'b=$(git branch --show-current); [[ -z "$b" ]] || echo -e "\\033[0;31m$REPO_PROJECT\\033[0m $b"'
+fi

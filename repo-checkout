@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -e
+
+function usage() {
+    echo "Usage: $(basename $0) [ref/file]"
+    echo ""
+    echo "Runs 'git checkout' in all projects."
+    echo ""
+    echo "For example:"
+    echo "$ $(basename $0) master"
+    echo ""
+    echo "Can be combined with 'repo-rev-parse'. For example:"
+    echo "$ repo-rev-parse > sha1.txt"
+    echo "$ $(basename $0) sha1.txt"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+opts="$@"
+for opt in "$opts"; do
+    case "$opt" in
+        -h|--help)
+            usage
+            ;;
+    esac
+done
+
+if [ $# -eq 1 ] && [ -f "$1" ]; then
+    while read -r project sha1; do
+        pushd $project
+        git checkout $sha1 || break
+        popd > /dev/null
+    done < $1
+else
+    repo forall -c "git checkout $opts" --
+fi

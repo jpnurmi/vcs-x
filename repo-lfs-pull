@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e
+
+verbose=false
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [projects]"
+    echo ""
+    echo "Runs 'git lfs pull' in all/specified projects."
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "-v,--verbose"
+    exit $1
+}
+
+opts=""
+for opt in "$@"; do
+    case "$opt" in
+        -h|--help)
+            usage
+            ;;
+        -v|--verbose)
+            verbose=true
+            shift
+            ;;
+        *)
+            opts="$opts $opt"
+            ;;
+    esac
+done
+
+if [ $verbose = true ]; then
+    repo forall $opts -c 'echo -e "\r\033[KLFS pull: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs pull'
+else
+    repo forall $opts -c 'echo -ne "\r\033[KLFS pull: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs pull' && echo
+fi

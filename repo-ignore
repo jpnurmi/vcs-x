@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -e
+
+function usage() {
+    echo "Usage: $(basename $0) [options] <files>"
+    echo ""
+    echo "Ignores files for 'repo-status'."
+    echo ""
+    echo "For example:"
+    echo "$ $(basename $0) package-lock.json"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@")
+[ $? -eq 0 ] || usage 1
+eval set -- "$opts"
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+[ $# -gt 0 ] || usage 1
+
+patterns=$(echo "$@" | sed 's/ /\\|/g')
+repo forall -c 'git ls-files | grep -E '$patterns' | xargs git update-index --assume-unchanged'
