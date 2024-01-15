@@ -34,7 +34,7 @@ _complete-repo-cd() {
 
 _complete-repo-help() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h --help"
+    local opts="-h --help -x"
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
@@ -64,13 +64,14 @@ _complete-repo-init() {
 --repo-rev
 --no-repo-verify
 --config-name
+-x
 "
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
 _complete-repo-project() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h --help -v --verbose"
+    local opts="-h --help -v --verbose -x"
     local names=$(repo list -nr "^$cur")
     COMPREPLY=($(compgen -W "$opts $names" -- "$cur"))
 }
@@ -104,6 +105,7 @@ _complete-repo-sync() {
 -s --smart-sync
 -t --smart-tag
 --no-repo-verify
+-x
 "
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }

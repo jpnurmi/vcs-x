@@ -2,4 +2,22 @@
 
 set -e
 
-repo sync -c --retry-fetches=5 --no-tags "$@"
+x=false
+
+opts=""
+for opt in "$@"; do
+    case "$opt" in
+        -x)
+            x=true
+            ;;
+        *)
+            opts="$opts $opt"
+            ;;
+    esac
+done
+
+if [ $x = true ]; then
+    echo "repo sync -c --retry-fetches=5 --no-tags $opts"
+else
+    repo sync -c --retry-fetches=5 --no-tags "$opts"
+fi

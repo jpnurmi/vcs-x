@@ -5,6 +5,7 @@ set -e
 url="$REPO_X_URL"
 branch="$REPO_X_BRANCH"
 mirror="$REPO_X_MIRROR"
+x=false
 
 opts=""
 for opt in "$@"; do
@@ -18,6 +19,9 @@ for opt in "$@"; do
         --mirror|--reference|--reference=*)
             mirror=""
             ;;
+        -x)
+            x=true
+            ;;
         *)
             opts="$opts $opt"
             ;;
@@ -29,4 +33,8 @@ args=(--no-repo-verify)
 [ -n "$branch" ] && args+=(-b "$branch")
 [ -n "$mirror" ] && args+=(--reference "$mirror")
 
-repo init "${args[@]}" "$@"
+if [ $x = true ]; then
+    echo "repo init ${args[@]} $@"
+else
+    repo init "${args[@]}" "$@"
+fi
