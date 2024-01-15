@@ -129,6 +129,14 @@ LFS pull: 100% (2/2) arkui_napi
 ...
 ```
 
+### `repo-mirror`
+
+Runs `repo-sync` and `repo-lfs-fetch` in `REPO_X_MIRROR`.
+
+```sh
+$ repo-mirror -j8
+```
+
 ### `repo-reset`
 
 Runs `git reset` in all projects.

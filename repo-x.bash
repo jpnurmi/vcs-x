@@ -69,6 +69,12 @@ _complete-repo-init() {
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
+_complete-repo-mirror() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="-h -j"
+    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+}
+
 _complete-repo-project() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="-h --help -v --verbose -x"
@@ -115,6 +121,7 @@ complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-help repo-checkout
 complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-init repo-init
+complete -F _complete-repo-mirror repo-mirror
 complete -F _complete-repo-project repo-lfs-fetch
 complete -F _complete-repo-project repo-lfs-pull
 complete -F _complete-repo-help repo-reset
