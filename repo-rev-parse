@@ -42,7 +42,7 @@ done
 arg="${1:-HEAD}"
 
 if [ $x = true ]; then
-    echo "repo forall -c 'git rev-parse $arg'"
+    echo "repo forall -c 'echo \$REPO_PATH \$(git rev-parse $arg)'"
 else
     repo forall -c 'echo $REPO_PATH $(git rev-parse '"$arg"')'
 fi
