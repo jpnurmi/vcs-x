@@ -4,11 +4,6 @@ set -e
 
 x=false
 
-if [ -z "$REPO_X_MIRROR" ]; then
-    echo "ERROR: REPO_X_MIRROR not set" >&2
-    exit 1
-fi
-
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
@@ -34,6 +29,9 @@ done
 
 if [ $x = true ]; then
     echo "cd $REPO_X_MIRROR"
+elif [ -z "$REPO_X_MIRROR" ]; then
+    echo "ERROR: REPO_X_MIRROR not set" >&2
+    exit 1
 elif [ ! -d "$REPO_X_MIRROR" ]; then
     mkdir -p "$REPO_X_MIRROR"
     cd "$REPO_X_MIRROR"
