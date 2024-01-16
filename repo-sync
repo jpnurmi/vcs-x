@@ -19,5 +19,5 @@ done
 if [ $x = true ]; then
     echo "repo sync -c --retry-fetches=5 --no-tags $opts"
 else
-    repo sync -c --retry-fetches=5 --no-tags "$opts"
+    repo sync -c --retry-fetches=5 --no-tags $opts
 fi
