@@ -1,7 +1,7 @@
 #!/bin/bash
 
 repo-cd() {
-    local root=$(_find-repo-root 2>/dev/null)
+    local root=$(repo-root 2>/dev/null)
     if [ -n "$root" ]; then
         local project="$1"
         if [ -z "$project" ]; then
@@ -13,7 +13,7 @@ repo-cd() {
     fi
 }
 
-_find-repo-root() {
+repo-root() {
     dir="$PWD"
     while [ "$dir" != "/" ]; do
         if [ -d "$dir/.repo" ]; then
