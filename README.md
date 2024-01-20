@@ -39,6 +39,13 @@ $ repo-cd arkui_ace_engine
 foundation/arkui/ace_engine$ repo-cd # repo root
 ```
 
+TIP:
+`repo-cd` clumsy to type? Try [complete-alias](https://github.com/cykerway/complete-alias):
+```sh
+alias rcd=repo-cd
+complete -F _complete_alias rcd
+```
+
 ### `repo-checkout`
 
 Runs `git checkout` in all projects.
