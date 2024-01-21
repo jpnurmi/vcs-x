@@ -129,10 +129,4 @@ complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
 complete -F _complete-repo-sync repo-sync
 
-repo-x-upgrade() {
-    pushd "$(dirname "$BASH_SOURCE")" > /dev/null
-    git pull
-    popd > /dev/null
-}
-
 export PATH="$(dirname "$BASH_SOURCE"):$PATH"
