@@ -7,7 +7,7 @@ x=false
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
-    echo "Runs 'repo-sync' and 'repo-lfs-fetch' in 'REPO_X_MIRROR'."
+    echo "Runs 'repo-sync' and 'repo-lfs-fetch' in 'REPO_MIRROR_LOCATION'."
     echo ""
     echo "Options:"
     echo "-h,--help"
@@ -28,16 +28,16 @@ for opt in "$@"; do
 done
 
 if [ $x = true ]; then
-    echo "cd $REPO_X_MIRROR"
-elif [ -z "$REPO_X_MIRROR" ]; then
-    echo "ERROR: REPO_X_MIRROR not set" >&2
+    echo "cd $REPO_MIRROR_LOCATION"
+elif [ -z "$REPO_MIRROR_LOCATION" ]; then
+    echo "ERROR: REPO_MIRROR_LOCATION not set" >&2
     exit 1
-elif [ ! -d "$REPO_X_MIRROR" ]; then
-    mkdir -p "$REPO_X_MIRROR"
-    cd "$REPO_X_MIRROR"
+elif [ ! -d "$REPO_MIRROR_LOCATION" ]; then
+    mkdir -p "$REPO_MIRROR_LOCATION"
+    cd "$REPO_MIRROR_LOCATION"
     repo-init --mirror
 else
-    cd "$REPO_X_MIRROR"
+    cd "$REPO_MIRROR_LOCATION"
 fi
 repo-sync "$@"
 repo-lfs-fetch "$@"

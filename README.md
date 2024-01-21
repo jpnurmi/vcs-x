@@ -81,10 +81,7 @@ $ repo-status
 
 ### `repo-init`
 
-`repo init` with auto-completion and support for the following environment variables:
-- `REPO_X_URL` (manifest URL)
-- `REPO_X_BRANCH` (manifest branch)
-- `REPO_X_MIRROR` (mirror path)
+`repo init` with auto-completion:
 
 ```sh
 $ repo-init -<TAB><TAB>
@@ -138,7 +135,7 @@ LFS pull: 100% (2/2) arkui_napi
 
 ### `repo-mirror`
 
-Runs `repo-sync` and `repo-lfs-fetch` in `REPO_X_MIRROR`.
+Runs `repo-sync` and `repo-lfs-fetch` in `REPO_MIRROR_LOCATION`.
 
 ```sh
 $ repo-mirror -j8
