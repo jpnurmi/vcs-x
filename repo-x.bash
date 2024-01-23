@@ -120,6 +120,7 @@ complete -F _complete-repo-cd repo-cd
 complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-help repo-checkout
 complete -F _complete-repo-help repo-clean
+complete -F _complete-repo-project repo-diff
 complete -F _complete-repo-init repo-init
 complete -F _complete-repo-mirror repo-mirror
 complete -F _complete-repo-project repo-lfs-fetch

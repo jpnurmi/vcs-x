@@ -1,0 +1,50 @@
+#!/bin/sh
+
+set -e
+
+verbose=false
+x=false
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<projects>]"
+    echo ""
+    echo "Runs 'git diff' in all/specified projects."
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "-v,--verbose"
+    echo "-x"
+    exit $1
+}
+
+opts=$(getopt --options "hvx" --longoptions "help,verbose" --name "$(basename $0)" -- "$@")
+[ $? -eq 0 ] || usage 1
+eval set -- "$opts"
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        -v|--verbose)
+            verbose=true
+            shift
+            ;;
+        -x)
+            x=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+if [ $x = true ]; then
+    echo "repo forall -c 'git diff'"
+elif [ $verbose = true ] || [ $# -gt 0 ]; then
+    repo forall "$@" -c 'd=$(git diff); [[ $d ]] && echo -e "\033[0;31m$REPO_PROJECT\033[0m" && git diff || echo -e "\033[0;32m$REPO_PROJECT\033[0m"'
+else
+    repo forall -c 'd=$(git diff); [[ $d ]] && echo -e "\033[0;31m$REPO_PROJECT\033[0m" && git diff'
+fi
