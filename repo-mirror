@@ -39,5 +39,7 @@ elif [ ! -d "$REPO_MIRROR_LOCATION" ]; then
 else
     cd "$REPO_MIRROR_LOCATION"
 fi
+
+echo "Syncing $REPO_MIRROR_LOCATION..."
 repo-sync "$@"
 repo-lfs-fetch "$@"
