@@ -33,7 +33,7 @@ repo-root() {
 
 _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local names=$(repo list -nr "^$cur")
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
     COMPREPLY=($(compgen -W "$names" -- "$cur"))
 }
 
@@ -83,7 +83,7 @@ _complete-repo-mirror() {
 _complete-repo-project() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="-h --help -v --verbose -x"
-    local names=$(repo list -nr "^$cur")
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
     COMPREPLY=($(compgen -W "$opts $names" -- "$cur"))
 }
 
