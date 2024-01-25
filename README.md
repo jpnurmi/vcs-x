@@ -5,9 +5,14 @@ auto-completion for Bash and compact output suitable for large repo trees.
 
 ## Installation
 
+System-wide:
 ```sh
-$ git clone git@gitee.com:jpnurmi/repo-x.git ~/.repo-x
-$ echo 'source ~/.repo-x/repo-x.bash' >> ~/.bashrc
+$ sudo make install
+```
+
+User-specific:
+```sh
+$ PREFIX=~/.local make install
 ```
 
 TIP: If you have [complete-alias](https://github.com/cykerway/complete-alias) installed

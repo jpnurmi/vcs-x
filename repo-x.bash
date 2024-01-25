@@ -134,5 +134,3 @@ complete -F _complete-repo-help repo-reset
 complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
 complete -F _complete-repo-sync repo-sync
-
-export PATH="$(dirname "$BASH_SOURCE"):$PATH"
