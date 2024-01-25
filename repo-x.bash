@@ -13,6 +13,11 @@ repo-cd() {
     fi
 }
 
+if declare -f _complete_alias > /dev/null; then
+    alias rcd='repo-cd'
+    complete -F _complete_alias rcd
+fi
+
 repo-root() {
     dir="$PWD"
     while [ "$dir" != "/" ]; do

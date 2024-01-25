@@ -7,7 +7,15 @@ auto-completion for Bash and compact output suitable for large repo trees.
 
 ```sh
 $ git clone git@gitee.com:jpnurmi/repo-x.git ~/.repo-x
-$ echo 'source $HOME/.repo-x/repo-x.bash' >> ~/.bashrc
+$ echo 'source ~/.repo-x/repo-x.bash' >> ~/.bashrc
+```
+
+TIP: If you have [complete-alias](https://github.com/cykerway/complete-alias) installed
+and sourced to your environment, `repo-x` automatically defines `rcd` alias for
+`repo-cd` and enables auto-completion for it. For example:
+```sh
+git clone https://github.com/cykerway/complete-alias ~/.complete-alias
+echo 'source ~/.complete-alias/complete_alias' >> ~/.bashrc
 ```
 
 ## Usage
@@ -37,13 +45,6 @@ arkcompiler_ets_runtime      arkcompiler_toolchain        arkui_ace_engine_lite 
 
 $ repo-cd arkui_ace_engine
 foundation/arkui/ace_engine$ repo-cd # repo root
-```
-
-TIP:
-`repo-cd` clumsy to type? Try [complete-alias](https://github.com/cykerway/complete-alias):
-```sh
-alias rcd=repo-cd
-complete -F _complete_alias rcd
 ```
 
 ### `repo-checkout`
