@@ -7,7 +7,7 @@ auto-completion for Bash and compact output suitable for large repo trees.
 
 ```sh
 $ git clone https://github.com/jpnurmi/repo-x.git ~/.repo-x
-$ echo 'source ~/.repo-x/repo-x.bash' >> ~/.bashrc
+$ echo 'source ~/.repo-x/repo-x.sh' >> ~/.bashrc
 ```
 
 TIP: If you have [complete-alias](https://github.com/cykerway/complete-alias) installed

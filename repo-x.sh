@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 repo-cd() {
     local root=$(repo-root 2>/dev/null)
@@ -135,4 +135,4 @@ complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
 complete -F _complete-repo-sync repo-sync
 
-export PATH="$(dirname "$BASH_SOURCE"):$PATH"
+export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"
