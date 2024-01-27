@@ -32,6 +32,8 @@ _complete-repo-help() {
 
 _complete-repo-init() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local files=""
     local opts="
 -h --help
 -v --verbose
@@ -58,7 +60,15 @@ _complete-repo-init() {
 --config-name
 -x
 "
-    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    case "$prev" in
+        -m|--manifest-name)
+            files=$(compgen -f -- ${cur})
+            ;;
+        --reference)
+            files=$(compgen -d -- ${cur})
+            ;;
+   esac
+    COMPREPLY=($(compgen -W "$opts $files" -- "$cur"))
 }
 
 _complete-repo-mirror() {
