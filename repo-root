@@ -1,0 +1,13 @@
+#!/bin/sh
+
+dir="$PWD"
+while [ "$dir" != "/" ]; do
+    if [ -d "$dir/.repo" ]; then
+        echo "$dir"
+        exit 0
+    fi
+    dir=$(dirname "$dir")
+done
+
+echo "ERROR: not a repo tree: $PWD" >&2
+exit 1

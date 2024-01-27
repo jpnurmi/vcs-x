@@ -18,19 +18,6 @@ if declare -f _complete_alias > /dev/null; then
     complete -F _complete_alias rcd
 fi
 
-repo-root() {
-    dir="$PWD"
-    while [ "$dir" != "/" ]; do
-        if [ -d "$dir/.repo" ]; then
-            echo "$dir"
-            return 0
-        fi
-        dir=$(dirname "$dir")
-    done
-    echo "ERROR: not a repo tree: $PWD" >&2
-    return 1
-}
-
 _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local names=$(repo list -nr "^$cur" 2>/dev/null)
