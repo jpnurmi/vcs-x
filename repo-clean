@@ -18,8 +18,8 @@ function usage() {
     exit $1
 }
 
-opts=""
-for opt in "$opts"; do
+opts=()
+for opt in "$@"; do
     case "$opt" in
         -h|--help)
             usage
@@ -28,13 +28,13 @@ for opt in "$opts"; do
             x=true
             ;;
         *)
-            opts="$opts $opt"
+            opts+=("$opt")
             ;;
     esac
 done
 
 if [ $x = true ]; then
-    echo "repo forall -c 'git clean $opts' --"
+    echo "repo forall -c 'git clean ${opts[@]}' --"
 else
-    repo forall -c "git clean $opts" --
+    repo forall -c "git clean ${opts[@]}" --
 fi

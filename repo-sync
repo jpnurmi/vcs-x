@@ -1,23 +1,23 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 x=false
 
-opts=""
+opts=()
 for opt in "$@"; do
     case "$opt" in
         -x)
             x=true
             ;;
         *)
-            opts="$opts $opt"
+            opts+=("$opt")
             ;;
     esac
 done
 
 if [ $x = true ]; then
-    echo "repo sync -c --retry-fetches=5 --no-tags $opts"
+    echo "repo sync -c --retry-fetches=5 --no-tags ${opts[@]}"
 else
-    repo sync -c --retry-fetches=5 --no-tags $opts
+    repo sync -c --retry-fetches=5 --no-tags ${opts[@]}
 fi

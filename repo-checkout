@@ -22,8 +22,8 @@ function usage() {
     exit $1
 }
 
-opts=""
-for opt in "$opts"; do
+opts=()
+for opt in "$@"; do
     case "$opt" in
         -h|--help)
             usage
@@ -32,13 +32,13 @@ for opt in "$opts"; do
             x=true
             ;;
         *)
-            opts="$opts $opt"
+            opts+=("$opt")
             ;;
     esac
 done
 
 if [ $x = true ]; then
-    echo "repo forall -c 'git checkout $opts' --"
+    echo "repo forall -c 'git checkout ${opts[@]}' --"
 elif [ $# -eq 1 ] && [ -f "$1" ]; then
     while read -r project sha1; do
         pushd $project
@@ -46,5 +46,5 @@ elif [ $# -eq 1 ] && [ -f "$1" ]; then
         popd > /dev/null
     done < $1
 else
-    repo forall -c "git checkout $opts" --
+    repo forall -c "git checkout ${opts[@]}" --
 fi
