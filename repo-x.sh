@@ -24,6 +24,24 @@ _complete-repo-cd() {
     COMPREPLY=($(compgen -W "$names" -- "$cur"))
 }
 
+_complete-repo-forall() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="
+-h --help
+-r --regex
+-i --inverse-regex
+-g --groups
+-c --command
+-e --abort-on-errors
+--ignore-missing
+-p
+-v --verbose
+-j --jobs
+"
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
+    COMPREPLY=($(compgen -W "$opts $names" -- "$cur"))
+}
+
 _complete-repo-help() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="-h --help"
@@ -32,8 +50,6 @@ _complete-repo-help() {
 
 _complete-repo-init() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD-1]}"
-    local files=""
     local opts="
 -h --help
 -v --verbose
@@ -59,15 +75,7 @@ _complete-repo-init() {
 --no-repo-verify
 --config-name
 "
-    case "$prev" in
-        -m|--manifest-name)
-            files=$(compgen -f -- ${cur})
-            ;;
-        --reference)
-            files=$(compgen -d -- ${cur})
-            ;;
-   esac
-    COMPREPLY=($(compgen -W "$opts $files" -- "$cur"))
+    COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
 _complete-repo-mirror() {
@@ -121,6 +129,7 @@ complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-help repo-checkout
 complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-project repo-diff
+complete -F _complete-repo-forall repo-forall
 complete -F _complete-repo-init repo-init
 complete -F _complete-repo-mirror repo-mirror
 complete -F _complete-repo-project repo-lfs-fetch

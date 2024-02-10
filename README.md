@@ -64,6 +64,24 @@ Runs `git clean` in all projects.
 $ repo-clean -xdf
 ```
 
+### `repo-diff`
+
+Runs `git diff` in all/specified projects.
+
+```sh
+$ repo-diff
+```
+
+### `repo-forall`
+
+Same as `repo forall` but with auto-completion:
+
+```sh
+$ repo-forall ark<TAB><TAB>
+arkcompiler_ets_frontend     arkcompiler_runtime_core     arkui_ace_engine             arkui_advanced_ui_component  arkui_ui_appearance          
+arkcompiler_ets_runtime      arkcompiler_toolchain        arkui_ace_engine_lite        arkui_napi                   arkui_ui_lite
+```
+
 ### `repo-ignore`
 
 Ignores files for `repo-status`.
@@ -82,7 +100,7 @@ $ repo-status
 
 ### `repo-init`
 
-`repo init` with auto-completion:
+Same as `repo init` but with auto-completion:
 
 ```sh
 $ repo-init -<TAB><TAB>
