@@ -2,8 +2,6 @@
 
 set -e
 
-x=false
-
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
@@ -12,7 +10,6 @@ function usage() {
     echo "Options:"
     echo "-h,--help"
     echo "-j,--jobs <jobs>"
-    echo "-x"
     exit $1
 }
 
@@ -21,15 +18,10 @@ for opt in "$@"; do
         -h|--help)
             usage
             ;;
-        -x)
-            x=true
-            ;;
     esac
 done
 
-if [ $x = true ]; then
-    echo "cd $REPO_MIRROR_LOCATION"
-elif [ -z "$REPO_MIRROR_LOCATION" ]; then
+if [ -z "$REPO_MIRROR_LOCATION" ]; then
     echo "ERROR: REPO_MIRROR_LOCATION not set" >&2
     exit 1
 elif [ ! -d "$REPO_MIRROR_LOCATION" ]; then

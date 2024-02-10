@@ -26,7 +26,7 @@ _complete-repo-cd() {
 
 _complete-repo-help() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h --help -x"
+    local opts="-h --help"
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
@@ -58,7 +58,6 @@ _complete-repo-init() {
 --repo-rev
 --no-repo-verify
 --config-name
--x
 "
     case "$prev" in
         -m|--manifest-name)
@@ -79,7 +78,7 @@ _complete-repo-mirror() {
 
 _complete-repo-project() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h --help -v --verbose -x"
+    local opts="-h --help -v --verbose"
     local names=$(repo list -nr "^$cur" 2>/dev/null)
     COMPREPLY=($(compgen -W "$opts $names" -- "$cur"))
 }
@@ -113,7 +112,6 @@ _complete-repo-sync() {
 -s --smart-sync
 -t --smart-tag
 --no-repo-verify
--x
 "
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }

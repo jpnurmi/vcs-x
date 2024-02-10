@@ -2,8 +2,6 @@
 
 set -e
 
-x=false
-
 function usage() {
     echo "Usage: $(basename $0) [ref/file]"
     echo ""
@@ -18,7 +16,6 @@ function usage() {
     echo ""
     echo "Options:"
     echo "-h,--help"
-    echo "-x"
     exit $1
 }
 
@@ -28,18 +25,13 @@ for opt in "$@"; do
         -h|--help)
             usage
             ;;
-        -x)
-            x=true
-            ;;
         *)
             opts+=("$opt")
             ;;
     esac
 done
 
-if [ $x = true ]; then
-    echo "repo forall -c 'git checkout ${opts[@]}' --"
-elif [ $# -eq 1 ] && [ -f "$1" ]; then
+if [ $# -eq 1 ] && [ -f "$1" ]; then
     while read -r project sha1; do
         pushd $project
         git checkout $sha1 || break

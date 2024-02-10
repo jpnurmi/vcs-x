@@ -3,7 +3,6 @@
 set -e
 
 verbose=false
-x=false
 
 function usage() {
     echo "Usage: $(basename $0) [options] [<projects>]"
@@ -13,11 +12,10 @@ function usage() {
     echo "Options:"
     echo "-h,--help"
     echo "-v,--verbose"
-    echo "-x"
     exit $1
 }
 
-opts=$(getopt --options "hvx" --longoptions "help,verbose" --name "$(basename $0)" -- "$@")
+opts=$(getopt --options "hv" --longoptions "help,verbose" --name "$(basename $0)" -- "$@")
 [ $? -eq 0 ] || usage 1
 eval set -- "$opts"
 
@@ -30,10 +28,6 @@ while true; do
             verbose=true
             shift
             ;;
-        -x)
-            x=true
-            shift
-            ;;
         --)
             shift
             break
@@ -41,9 +35,7 @@ while true; do
     esac
 done
 
-if [ $x = true ]; then
-    echo "repo forall -c 'git branch --show-current'"
-elif [ $verbose = true ] || [ $# -gt 0 ]; then
+if [ $verbose = true ] || [ $# -gt 0 ]; then
     repo forall "$@" -c 'b=$(git branch --show-current); [[ -n "$b" ]] && echo -e "\\033[0;31m$REPO_PROJECT\\033[0m $b" || echo -e "\\033[0;32m$REPO_PROJECT\\033[0m no branch"'
 else
     repo forall -c 'b=$(git branch --show-current); [[ -z "$b" ]] || echo -e "\\033[0;31m$REPO_PROJECT\\033[0m $b"'

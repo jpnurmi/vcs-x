@@ -3,7 +3,6 @@
 set -e
 
 verbose=false
-x=false
 
 function usage() {
     echo "Usage: $(basename $0) [projects]"
@@ -13,7 +12,6 @@ function usage() {
     echo "Options:"
     echo "-h,--help"
     echo "-v,--verbose"
-    echo "-x"
     exit $1
 }
 
@@ -27,19 +25,13 @@ for opt in "$@"; do
             verbose=true
             shift
             ;;
-        -x)
-            x=true
-            shift
-            ;;
         *)
             opts+=("$opt")
             ;;
     esac
 done
 
-if [ $x = true ]; then
-    echo "repo forall ${opts[@]} -c 'git lfs pull'"
-elif [ $verbose = true ]; then
+if [ $verbose = true ]; then
     repo forall ${opts[@]} -c 'echo -e "\r\033[KLFS fetch: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs fetch'
 else
     repo forall ${opts[@]} -c 'echo -ne "\r\033[KLFS fetch: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs fetch > /dev/null' && echo

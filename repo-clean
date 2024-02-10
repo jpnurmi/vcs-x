@@ -2,8 +2,6 @@
 
 set -e
 
-x=false
-
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
@@ -14,7 +12,6 @@ function usage() {
     echo ""
     echo "Options:"
     echo "-h,--help"
-    echo "-x"
     exit $1
 }
 
@@ -24,17 +21,10 @@ for opt in "$@"; do
         -h|--help)
             usage
             ;;
-        -x)
-            x=true
-            ;;
         *)
             opts+=("$opt")
             ;;
     esac
 done
 
-if [ $x = true ]; then
-    echo "repo forall -c 'git clean ${opts[@]}' --"
-else
-    repo forall -c "git clean ${opts[@]}" --
-fi
+repo forall -c "git clean ${opts[@]}" --

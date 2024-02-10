@@ -2,8 +2,6 @@
 
 set -e
 
-x=false
-
 function usage() {
     echo "Usage: $(basename $0) [options] [<ref=HEAD>]"
     echo ""
@@ -15,11 +13,10 @@ function usage() {
     echo ""
     echo "Options:"
     echo "-h,--help"
-    echo "-x"
     exit $1
 }
 
-opts=$(getopt --options "hx" --longoptions "help" --name "$(basename $0)" -- "$@")
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@")
 [ $? -eq 0 ] || usage 1
 eval set -- "$opts"
 
@@ -27,10 +24,6 @@ while true; do
     case "$1" in
         -h|--help)
             usage
-            ;;
-        -x)
-            x=true
-            shift
             ;;
         --)
             shift
@@ -41,8 +34,4 @@ done
 
 arg="${1:-HEAD}"
 
-if [ $x = true ]; then
-    echo "repo forall -c 'echo \$REPO_PATH \$(git rev-parse $arg)'"
-else
-    repo forall -c 'echo $REPO_PATH $(git rev-parse '"$arg"')'
-fi
+repo forall -c 'echo $REPO_PATH $(git rev-parse '"$arg"')'
