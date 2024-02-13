@@ -48,6 +48,17 @@ _complete-repo-help() {
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
+_complete-repo-manifest() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    case "$prev" in
+        -m|--manifest-name)
+            local files=$(compgen -A file -X '!*.xml' -- $cur)
+            COMPREPLY+=($(compgen -W "$files" -- "$cur"))
+            ;;
+    esac
+}
+
 _complete-repo-init() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="
@@ -76,6 +87,7 @@ _complete-repo-init() {
 --config-name
 "
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    _complete-repo-manifest
 }
 
 _complete-repo-mirror() {
@@ -122,6 +134,7 @@ _complete-repo-sync() {
 --no-repo-verify
 "
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+    _complete-repo-manifest
 }
 
 complete -F _complete-repo-cd repo-cd
