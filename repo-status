@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 verbose=false
 
 function usage() {
@@ -15,14 +13,15 @@ function usage() {
     exit $1
 }
 
-opts=$(getopt --options "hv" --longoptions "help,verbose" --name "$(basename $0)" -- "$@")
-[ $? -eq 0 ] || usage 1
+opts=$(getopt --options "hv" --longoptions "help,verbose" --name "$(basename $0)" -- "$@") || usage 1
 eval set -- "$opts"
+
+set -e
 
 while true; do
     case "$1" in
         -h|--help)
-            usage
+            usage 0
             ;;
         -v|--verbose)
             verbose=true

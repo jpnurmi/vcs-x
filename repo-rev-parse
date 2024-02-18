@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 function usage() {
     echo "Usage: $(basename $0) [options] [<ref=HEAD>]"
     echo ""
@@ -16,14 +14,15 @@ function usage() {
     exit $1
 }
 
-opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@")
-[ $? -eq 0 ] || usage 1
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@") || usage 1
 eval set -- "$opts"
+
+set -e
 
 while true; do
     case "$1" in
         -h|--help)
-            usage
+            usage 0
             ;;
         --)
             shift
