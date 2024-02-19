@@ -6,11 +6,11 @@ opts=()
 while [ $# -gt 0 ]; do
     case "$1" in
         -m|--manifest-name)
-            args+=("$1" $(realpath "$2"))
+            opts+=("$1" $(realpath "$2"))
             shift 2
             ;;
         -m=*|--manifest-name=*)
-            args+=("${1%=*}"=$(realpath "${1#*=}"))
+            opts+=("${1%=*}"=$(realpath "${1#*=}"))
             shift
             ;;
         *)
@@ -20,4 +20,4 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-repo sync -c --retry-fetches=5 --no-tags ${opts[@]}
+repo sync -c --retry-fetches=5 --no-tags --optimized-fetch ${opts[@]}
