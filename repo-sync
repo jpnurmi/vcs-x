@@ -3,10 +3,19 @@
 set -e
 
 opts=()
-for opt in "$@"; do
-    case "$opt" in
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -m|--manifest-name)
+            args+=("$1" $(realpath "$2"))
+            shift 2
+            ;;
+        -m=*|--manifest-name=*)
+            args+=("${1%=*}"=$(realpath "${1#*=}"))
+            shift
+            ;;
         *)
-            opts+=("$opt")
+            opts+=("$1")
+            shift
             ;;
     esac
 done
