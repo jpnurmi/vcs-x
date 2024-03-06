@@ -2,6 +2,8 @@
 
 set -e
 
+repo_mirror_location=${REPO_MIRROR_LOCATION:-$PWD}
+
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
@@ -21,17 +23,14 @@ for opt in "$@"; do
     esac
 done
 
-if [ -z "$REPO_MIRROR_LOCATION" ]; then
-    echo "ERROR: REPO_MIRROR_LOCATION not set" >&2
-    exit 1
-elif [ ! -d "$REPO_MIRROR_LOCATION" ]; then
-    mkdir -p "$REPO_MIRROR_LOCATION"
-    cd "$REPO_MIRROR_LOCATION"
+if [ ! -d "$repo_mirror_location" ]; then
+    mkdir -p "$repo_mirror_location"
+    cd "$repo_mirror_location"
     repo-init --mirror
 else
-    cd "$REPO_MIRROR_LOCATION"
+    cd "$repo_mirror_location"
 fi
 
-echo "Syncing $REPO_MIRROR_LOCATION..."
+echo "Syncing $repo_mirror_location..."
 repo-sync "$@"
 repo-lfs-fetch "$@"
