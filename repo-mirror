@@ -23,7 +23,7 @@ for opt in "$@"; do
     esac
 done
 
-if [ ! -d "$repo_mirror_location" ]; then
+if [ ! -d "$repo_mirror_location/.repo" ]; then
     mkdir -p "$repo_mirror_location"
     cd "$repo_mirror_location"
     repo-init --mirror
