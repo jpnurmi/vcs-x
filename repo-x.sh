@@ -24,6 +24,13 @@ _complete-repo-cd() {
     COMPREPLY=($(compgen -W "$names" -- "$cur"))
 }
 
+_complete-repo-checkout() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="-h --help"
+    local files=$(compgen -A file -- $cur)
+    COMPREPLY+=($(compgen -W "$opts $files" -- "$cur"))
+}
+
 _complete-repo-forall() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="
@@ -139,7 +146,7 @@ _complete-repo-sync() {
 
 complete -F _complete-repo-cd repo-cd
 complete -F _complete-repo-project repo-branch
-complete -F _complete-repo-help repo-checkout
+complete -F _complete-repo-checkout repo-checkout
 complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-project repo-diff
 complete -F _complete-repo-forall repo-forall

@@ -49,11 +49,22 @@ foundation/arkui/ace_engine$ repo-cd # repo root
 
 ### `repo-checkout`
 
-Runs `git checkout` in all projects.
+Runs `git checkout` in all/listed projects.
 
+```sh
+$ repo-checkout master
+```
+
+Can be combined with `repo-rev-parse`:
 ```sh
 $ repo-rev-parse > sha1.txt
 $ repo-checkout sha1.txt
+```
+
+Or with `repo-branch`:
+```sh
+$ repo-branch > branches.txt
+$ repo-checkout branches.txt
 ```
 
 ### `repo-clean`

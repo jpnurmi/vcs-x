@@ -5,14 +5,18 @@ set -e
 function usage() {
     echo "Usage: $(basename $0) [ref/file]"
     echo ""
-    echo "Runs 'git checkout' in all projects."
+    echo "Runs 'git checkout' in all/listed projects."
     echo ""
     echo "For example:"
     echo "$ $(basename $0) master"
     echo ""
-    echo "Can be combined with 'repo-rev-parse'. For example:"
+    echo "Can be combined with 'repo-rev-parse':"
     echo "$ repo-rev-parse > sha1.txt"
     echo "$ $(basename $0) sha1.txt"
+    echo ""
+    echo "Or with 'repo-branch':"
+    echo "$ repo-branch > branches.txt"
+    echo "$ $(basename $0) branches.txt"
     echo ""
     echo "Options:"
     echo "-h,--help"
@@ -32,10 +36,29 @@ for opt in "$@"; do
 done
 
 if [ $# -eq 1 ] && [ -f "$1" ]; then
-    while read -r project sha1; do
-        pushd $project
-        git checkout $sha1 || break
-        popd > /dev/null
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        project=$(echo "$line" | awk '{print $1}')
+        if [[ $project == *: ]]; then
+            path=$(repo list -p ${project%:})
+            local_branch=$(echo "$line" | awk '{print $2}')
+            remote=$(echo "$line" | awk '{print $3}' | cut -d'/' -f1)
+            remote_branch=$(echo "$line" | awk '{print $3}' | cut -d'/' -f2)
+            pushd $path
+            if ! git remote | grep "$remote" > /dev/null; then
+                git-remote-dup --fetch origin $remote
+            fi
+            if git branch --list $local_branch > /dev/null 2>&1; then
+                git checkout $local_branch
+                git branch -u $remote/$remote_branch
+            else
+                git checkout -b $local_branch $remote/$remote_branch
+            fi
+            popd > /dev/null
+        else
+            pushd $project
+            git checkout $sha1 || break
+            popd > /dev/null
+        fi
     done < $1
 else
     repo forall -c "git checkout ${opts[@]}" --
