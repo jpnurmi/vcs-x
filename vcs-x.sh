@@ -2,6 +2,9 @@
 
 export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"
 
+srcdir=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
+source "$srcdir/complete-alias/complete_alias"
+
 repo-cd() {
     local root=$(repo-root 2>/dev/null)
     if [ -n "$root" ]; then
@@ -14,11 +17,8 @@ repo-cd() {
         fi
     fi
 }
-
-if declare -f _complete_alias > /dev/null; then
-    alias rcd='repo-cd'
-    complete -F _complete_alias rcd
-fi
+alias rcd='repo-cd'
+complete -F _complete_alias rcd
 
 _comp_idx() {
     local idx=0

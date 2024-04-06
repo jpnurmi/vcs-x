@@ -7,7 +7,7 @@ for Bash and compact output suitable for large repo trees.
 ## Installation
 
 ```sh
-$ git clone https://github.com/jpnurmi/vcs-x.git ~/.vcs-x
+$ git clone --recurse-submodules https://github.com/jpnurmi/vcs-x.git ~/.vcs-x
 $ echo 'source ~/.vcs-x/vcs-x.sh' >> ~/.bashrc
 ```
 
