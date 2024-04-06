@@ -1,0 +1,89 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: $(basename $0) [options] <origin> <remotes>"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "--fetch"
+    echo "--https"
+    echo "--ssh"
+    exit $1
+}
+
+opts=$(getopt --options "hv" --longoptions "help,fetch,https,ssh" --name "$(basename $0)" -- "$@") || usage 1
+eval set -- "$opts"
+
+fetch=$(git config x.fetch || echo false)
+proto=$(git config x.proto || echo auto)
+
+set -e
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        --fetch)
+            fetch=true
+            shift
+            ;;
+        --https)
+            proto=https
+            shift
+            ;;
+        --ssh)
+            proto=ssh
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+[ $# -gt 1 ] || usage 1
+
+origin=$(git remote get-url $1)
+ssh="git@([^:]+):(.+)"
+https="https://([^/]+)/(.+)"
+
+if [[ $origin =~ $ssh ]]; then
+    host=${BASH_REMATCH[1]}
+    path=${BASH_REMATCH[2]}
+    [ $proto != https ] && proto=ssh
+elif [[ $origin =~ $https ]]; then
+    host=${BASH_REMATCH[1]}
+    path=${BASH_REMATCH[2]}
+    [ $proto != ssh ] && proto=https
+fi
+name=$(echo "$path" | cut -d/ -f2)
+
+shift
+remotes=("${@:1}")
+for remote in "${remotes[@]}"; do
+    path="$remote/$name"
+
+    case "$proto" in
+        ssh)
+            url="git@$host:$path"
+            ;;
+        https)
+            url="https://$host/$path"
+            ;;
+    esac
+
+    if ! git remote | grep "$remote" > /dev/null; then
+        git remote add "$remote" "$url"
+    else
+        git remote set-url "$remote" "$url"
+    fi
+    shift
+done
+
+git remote -v
+
+if [ "$fetch" = true ]; then
+    git fetch --multiple "${remotes[@]}"
+fi

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"
+
 repo-cd() {
     local root=$(repo-root 2>/dev/null)
     if [ -n "$root" ]; then
@@ -17,6 +19,48 @@ if declare -f _complete_alias > /dev/null; then
     alias rcd='repo-cd'
     complete -F _complete_alias rcd
 fi
+
+_comp_idx() {
+    local idx=0
+    for ((i = 1; i < COMP_CWORD; i++)); do
+        arg="${COMP_WORDS[i]}"
+        if [[ $arg != -* ]]; then
+            ((idx++))
+            break
+        fi
+    done
+    echo $idx
+}
+
+_complete_git_remote_dup() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local opts="-h --help --fetch --https --ssh"
+    local remotes=""
+    if [ "$(_comp_idx)" -eq 0 ]; then
+        remotes="$(git remote)"
+    else
+        remotes="$(git config x.remotes)"
+    fi
+    COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
+}
+complete -F _complete_git_remote_dup git-remote-dup
+
+_complete_git_remote_proto() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local opts="-h --help"
+    local remotes="$(git remote)"
+    COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
+}
+complete -F _complete_git_remote_proto git-remote-https
+complete -F _complete_git_remote_proto git-remote-ssh
+
+_complete_git_remote_tidy() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local opts="-h --help --no-branches --no-tags"
+    local remotes="$(git remote)"
+    COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
+}
+complete -F _complete_git_remote_tidy git-remote-tidy
 
 _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -158,5 +202,3 @@ complete -F _complete-repo-help repo-reset
 complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
 complete -F _complete-repo-sync repo-sync
-
-export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"

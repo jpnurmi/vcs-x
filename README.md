@@ -1,24 +1,76 @@
-# Repo X
+# VCS X
 
-[Repo](https://source.android.com/docs/setup/reference/repo) extensions with
-auto-completion for Bash and compact output suitable for large repo trees.
+Various version control system extensions for [Git](https://git-scm.com) and
+[Repo](https://source.android.com/docs/setup/reference/repo) with auto-completion
+for Bash and compact output suitable for large repo trees.
 
 ## Installation
 
 ```sh
-$ git clone https://github.com/jpnurmi/repo-x.git ~/.repo-x
-$ echo 'source ~/.repo-x/repo-x.sh' >> ~/.bashrc
-```
-
-TIP: If you have [complete-alias](https://github.com/cykerway/complete-alias) installed
-and sourced to your environment, `repo-x` automatically defines `rcd` alias for
-`repo-cd` and enables auto-completion for it. For example:
-```sh
-git clone https://github.com/cykerway/complete-alias ~/.complete-alias
-echo 'source ~/.complete-alias/complete_alias' >> ~/.bashrc
+$ git clone https://github.com/jpnurmi/vcs-x.git ~/.vcs-x
+$ echo 'source ~/.vcs-x/vcs-x.sh' >> ~/.bashrc
 ```
 
 ## Usage
+
+### `git-remote-dup`
+
+Duplicates a Git remote. Commonly used remote names can be specified via the
+`x.remotes` Git config variable.
+
+```sh
+$ git remote -v
+origin	git@github.com:jpnurmi/vcs-x.git (fetch)
+origin	git@github.com:jpnurmi/vcs-x.git (push)
+
+$ git config --global x.remotes "foo bar"
+
+$ git-remote-dup origin <TAB><TAB>
+bar      foo      -h       --help   --https  --ssh
+
+$ git-remote-dup origin foo
+foo	git@github.com:foo/vcs-x.git (fetch)
+foo	git@github.com:foo/vcs-x.git (push)
+origin	git@github.com:jpnurmi/vcs-x.git (fetch)
+origin	git@github.com:jpnurmi/vcs-x.git (push)
+
+$ git-remote-dup --https origin bar
+bar	https://github.com/bar/vcs-x.git (fetch)
+bar	https://github.com/bar/vcs-x.git (push)
+foo	git@github.com:foo/vcs-x.git (fetch)
+foo	git@github.com:foo/vcs-x.git (push)
+origin	git@github.com:jpnurmi/vcs-x.git (fetch)
+origin	git@github.com:jpnurmi/vcs-x.git (push)
+```
+
+### `git-remote-https`, `git-remote-ssh`
+
+Changes Git remote URLs to HTTPS or SSH.
+
+```sh
+$ git remote -v
+origin	git@github.com:jpnurmi/vcs-x.git (fetch)
+origin	git@github.com:jpnurmi/vcs-x.git (push)
+
+$ git-remote-https origin
+origin	https://github.com/jpnurmi/vcs-x.git (fetch)
+origin	https://github.com/jpnurmi/vcs-x.git (push)
+
+$ git-remote-ssh origin
+origin	git@github.com:jpnurmi/vcs-x.git (fetch)
+origin	git@github.com:jpnurmi/vcs-x.git (push)
+```
+
+### `git-remote-tidy`
+
+Batch-deletes matching remote branches and tags.
+
+```sh
+$ git-remote-tidy origin f* bar
+To github.com:jpnurmi/vcs-x.git
+ - [deleted]         foo
+ - [deleted]         bar
+```
 
 ### `repo-branch`
 

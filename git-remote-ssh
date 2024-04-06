@@ -1,0 +1,46 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: $(basename $0) [options] <remotes>"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@") || usage 1
+eval set -- "$opts"
+
+set -e
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+[ $# -gt 0 ] || usage 1
+
+ssh="git@([^:]+):(.+)"
+https="https://([^/]+)/(.+)"
+
+for remote in "$@"; do
+    url=$(git remote get-url $remote)
+    if [[ $url =~ $ssh ]]; then
+        host=${BASH_REMATCH[1]}
+        path=${BASH_REMATCH[2]}
+    elif [[ $url =~ $https ]]; then
+        host=${BASH_REMATCH[1]}
+        path=${BASH_REMATCH[2]}
+    fi
+    url="git@$host:$path"
+    git remote set-url "$remote" "$url"
+done
+
+git remote -v
