@@ -1,13 +1,14 @@
 #!/bin/sh
 
-dir="$PWD"
-while [ "$dir" != "/" ]; do
-    if [ -d "$dir/.repo" ]; then
-        echo "$dir"
+dir="$(realpath ${1:-$PWD})"
+cur="$dir"
+while [ -d "$cur" ] && [ "$cur" != "/" ]; do
+    if [ -d "$cur/.repo" ]; then
+        echo "$cur"
         exit 0
     fi
-    dir=$(dirname "$dir")
+    cur=$(dirname "$cur")
 done
 
-echo "ERROR: not a repo tree: $PWD" >&2
+echo "ERROR: not a repo tree: $dir" >&2
 exit 1
