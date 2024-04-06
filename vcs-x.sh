@@ -70,7 +70,7 @@ _complete-repo-cd() {
 
 _complete-repo-checkout() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h --help -r --rebase"
+    local opts="-h --help -b --branch -r --rebase"
     local files=$(compgen -A file -- $cur)
     COMPREPLY+=($(compgen -W "$opts $files" -- "$cur"))
 }

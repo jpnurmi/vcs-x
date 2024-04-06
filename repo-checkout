@@ -17,16 +17,23 @@ function usage() {
     echo ""
     echo "Options:"
     echo "-h,--help"
+    echo "-b,--branch <branch>"
+    echo "-r,--rebase <upstream>"
     exit $1
 }
 
 opts=()
 popts=()
+branch=
 rebase=
 while [ $# -gt 0 ]; do
     case "$1" in
         -h|--help)
             usage
+            ;;
+        -b|--branch)
+            branch="$2"
+            shift 2
             ;;
         -r|--rebase)
             rebase="$2"
@@ -47,6 +54,8 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+set -x
+
 for popt in "${popts[@]}"; do
     if [ -f "$popt" ]; then
         while IFS= read -r line || [[ -n "$line" ]]; do
@@ -59,18 +68,23 @@ for popt in "${popts[@]}"; do
             pushd $path
 
             if [[ $project == *: ]]; then
-                local_branch=$(echo "$line" | awk '{print $2}')
+                local_branch=$branch
+                [ -z "$local_branch" ] && local_branch=$(echo "$line" | awk '{print $2}')
                 remote=$(echo "$line" | awk '{print $3}' | cut -d'/' -f1)
                 remote_branch=$(echo "$line" | awk '{print $3}' | cut -d'/' -f2)
 
                 if ! git remote | grep "$remote" > /dev/null; then
                     git-remote-dup --fetch origin $remote
                 fi
-                if git branch --list $local_branch > /dev/null 2>&1; then
+                if git show-ref --quiet refs/heads/$local_branch > /dev/null 2>&1; then
                     git checkout $local_branch
-                    git branch -u $remote/$remote_branch
-                else
+                    if [ -z "$branch" ]; then
+                        git branch -u $remote/$remote_branch
+                    fi
+                elif [ -z "$branch" ]; then
                     git checkout -b $local_branch $remote/$remote_branch
+                else
+                    git checkout -b $local_branch --no-track $remote/$remote_branch
                 fi
             else
                 git checkout $sha1 || break
