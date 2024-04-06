@@ -75,6 +75,14 @@ _complete-repo-checkout() {
     COMPREPLY+=($(compgen -W "$opts $files" -- "$cur"))
 }
 
+_complete-repo-fetch() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="-h --help"
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
+    local remotes="origin upstream $(git config x.remotes)"
+    COMPREPLY+=($(compgen -W "$opts $names $remotes" -- "$cur"))
+}
+
 _complete-repo-forall() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="
@@ -193,6 +201,7 @@ complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-checkout repo-checkout
 complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-project repo-diff
+complete -F _complete-repo-fetch repo-fetch
 complete -F _complete-repo-forall repo-forall
 complete -F _complete-repo-init repo-init
 complete -F _complete-repo-mirror repo-mirror

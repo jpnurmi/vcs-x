@@ -1,0 +1,36 @@
+#!/bin/sh
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<projects>] [<remotes>]"
+    echo ""
+    echo "Runs 'git fetch' for all/specified projects and remotes."
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    exit $1
+}
+
+set -e
+
+function is_project() {
+    repo list -n | grep -q -w -F "$1"
+}
+
+projects=()
+remotes=()
+for opt in "$@"; do
+    case "$opt" in
+        -h|--help)
+            usage
+            ;;
+        *)
+            if is_project "$opt"; then
+                projects+=("$opt")
+            else
+                remotes+=("$opt")
+            fi
+            ;;
+    esac
+done
+
+repo forall "${projects[@]}" -c 'r='"${remotes[@]}"'; f=$(echo "$r" | grep -w -F -f <(git remote)); ( [ -n "$f" ] && echo "Fetching $REPO_PROJECT..." && git fetch -q --multiple "$f" ) || ( [ -n "$r" ] || ( echo "Fetching $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..." && git fetch -q --all ) )'
