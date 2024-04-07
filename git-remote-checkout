@@ -1,0 +1,74 @@
+#!/bin/sh
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<branch>] <remote/branch>"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "-r,--rebase <upstream>"
+    echo "-t,--track"
+    echo "--no-track"
+    exit $1
+}
+
+opts=$(getopt --options "hr:t" --longoptions "help,rebase:,track,no-track" --name "$(basename $0)" -- "$@") || usage 1
+eval set -- "$opts"
+
+set -e
+
+rebase=
+track=true
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        -r|--rebase)
+            rebase="$2"
+            shift 2
+            ;;
+        -t|--track)
+            track=true
+            shift
+            ;;
+        --no-track)
+            track=false
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+if [ $# -eq 1 ]; then
+    remote=$(echo $1 | cut -d/ -f1)
+    remote_branch=$(echo $1 | cut -d/ -f2)
+    local_branch=$remote_branch
+elif [ $# -eq 2 ]; then
+    local_branch=$1
+    remote=$(echo $2 | cut -d/ -f1)
+    remote_branch=$(echo $2 | cut -d/ -f2)
+else
+    usage 1
+fi
+
+git-remote-dup --quiet --fetch origin $remote
+
+if git checkout $local_branch; then
+    if [ "$track" = true ]; then
+        git branch -u $remote/$remote_branch
+    fi
+else
+    if [ "$track" = true ]; then
+        git checkout -b $local_branch --track $remote/$remote_branch
+    else
+        git checkout -b $local_branch --no-track $remote/$remote_branch
+    fi
+fi
+
+if [ -n "$rebase" ]; then
+    git rebase $rebase
+fi

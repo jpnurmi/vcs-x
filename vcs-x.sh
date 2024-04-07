@@ -32,9 +32,17 @@ _comp_idx() {
     echo $idx
 }
 
+_complete_git_remote_checkout() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local opts="-h --help -r --rebase -t --track --no-track"
+    local remotes=$(compgen -W "$(git config x.remotes)" -S /)
+    COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
+}
+complete -F _complete_git_remote_checkout -o nospace git-remote-checkout
+
 _complete_git_remote_dup() {
     local cur=${COMP_WORDS[COMP_CWORD]}
-    local opts="-h --help --fetch --https --ssh"
+    local opts="-h --help --fetch --https --ssh --quiet"
     local remotes=""
     if [ "$(_comp_idx)" -eq 0 ]; then
         remotes="$(git remote)"

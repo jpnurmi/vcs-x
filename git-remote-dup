@@ -11,11 +11,12 @@ usage() {
     exit $1
 }
 
-opts=$(getopt --options "hv" --longoptions "help,fetch,https,ssh" --name "$(basename $0)" -- "$@") || usage 1
+opts=$(getopt --options "hq" --longoptions "help,fetch,https,ssh,quiet" --name "$(basename $0)" -- "$@") || usage 1
 eval set -- "$opts"
 
 fetch=$(git config x.fetch || echo false)
 proto=$(git config x.proto || echo auto)
+quiet=false
 
 set -e
 
@@ -34,6 +35,10 @@ while true; do
             ;;
         --ssh)
             proto=ssh
+            shift
+            ;;
+        --quiet)
+            quiet=true
             shift
             ;;
         --)
@@ -82,8 +87,10 @@ for remote in "${remotes[@]}"; do
     shift
 done
 
-git remote -v
+[ "$quiet" = true ] || git remote -v
 
 if [ "$fetch" = true ]; then
-    git fetch --multiple "${remotes[@]}"
+    opts=("--multiple")
+    [ "$quiet" = true ] && opts+=("--quiet")
+    git fetch "${opts[@]}" "${remotes[@]}"
 fi
