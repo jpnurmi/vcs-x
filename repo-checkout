@@ -3,99 +3,40 @@
 set -e
 
 function usage() {
-    echo "Usage: $(basename $0) [ref/file(s)]"
+    echo "Usage: $(basename $0) [ref/file]"
     echo ""
-    echo "Runs 'git checkout' in all/listed projects."
+    echo "Runs 'git checkout' in all projects."
     echo ""
     echo "For example:"
     echo "$ $(basename $0) master"
     echo ""
-    echo "Can be combined with 'repo-rev-parse' and/or 'repo-branch':"
+    echo "Can be combined with 'repo-rev-parse'. For example:"
     echo "$ repo-rev-parse > sha1.txt"
-    echo "$ repo-branch > branches.txt"
-    echo "$ $(basename $0) sha1.txt branches.txt"
+    echo "$ $(basename $0) sha1.txt"
     echo ""
     echo "Options:"
     echo "-h,--help"
-    echo "-b,--branch <branch>"
-    echo "-r,--rebase <upstream>"
     exit $1
 }
 
 opts=()
-popts=()
-branch=
-rebase=
-while [ $# -gt 0 ]; do
-    case "$1" in
+for opt in "$@"; do
+    case "$opt" in
         -h|--help)
             usage
             ;;
-        -b|--branch)
-            branch="$2"
-            shift 2
-            ;;
-        -r|--rebase)
-            rebase="$2"
-            shift 2
-            ;;
-        -r=*|--rebase=*)
-            rebase="${1#*=}"
-            shift
-            ;;
-        -*)
-            opts+=("$1")
-            shift
-            ;;
         *)
-            popts+=("$1")
-            shift
+            opts+=("$opt")
             ;;
     esac
 done
 
-root=$(repo-root)
-for popt in "${popts[@]}"; do
-    if [ -f "$popt" ]; then
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            project=$(echo "$line" | awk '{print $1}')
-            path=$project
-            if [[ $project == *: ]]; then
-                path=$(repo list -p ${project%:})
-            fi
-
-            pushd "$root/$path"
-
-            if [[ $project == *: ]]; then
-                local_branch=$branch
-                [ -z "$local_branch" ] && local_branch=$(echo "$line" | awk '{print $2}')
-                remote=$(echo "$line" | awk '{print $3}' | cut -d'/' -f1)
-                remote_branch=$(echo "$line" | awk '{print $3}' | cut -d'/' -f2)
-
-                if ! git remote | grep "$remote" > /dev/null; then
-                    git-remote-dup --fetch origin $remote
-                fi
-                if git show-ref --quiet refs/heads/$local_branch > /dev/null 2>&1; then
-                    git checkout $local_branch
-                    if [ -z "$branch" ]; then
-                        git branch -u $remote/$remote_branch
-                    fi
-                elif [ -z "$branch" ]; then
-                    git checkout -b $local_branch $remote/$remote_branch
-                else
-                    git checkout -b $local_branch --no-track $remote/$remote_branch
-                fi
-            else
-                git checkout $sha1 || break
-            fi
-
-            if [ -n "$rebase" ]; then
-                git rebase $rebase
-            fi
-
-            popd > /dev/null
-        done < "$popt"
-    else
-        repo forall -c "git checkout ${opts[@]} ${popts[@]}" --
-    fi
-done
+if [ $# -eq 1 ] && [ -f "$1" ]; then
+    while read -r project sha1; do
+        pushd $project
+        git checkout $sha1 || break
+        popd > /dev/null
+    done < $1
+else
+    repo forall -c "git checkout ${opts[@]}" --
+fi
