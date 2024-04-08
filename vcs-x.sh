@@ -17,6 +17,7 @@ repo-cd() {
         fi
     fi
 }
+export -f repo-cd
 alias rcd='repo-cd'
 complete -F _complete_alias rcd
 
