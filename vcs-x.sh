@@ -160,7 +160,7 @@ _complete-repo-init() {
 
 _complete-repo-mirror() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local opts="-h -j"
+    local opts="-h --help -j --jobs"
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 

@@ -7,7 +7,9 @@ repo_mirror_location=${REPO_MIRROR_LOCATION:-$PWD}
 function usage() {
     echo "Usage: $(basename $0) [options]"
     echo ""
-    echo "Runs 'repo-sync' and 'repo-lfs-fetch' in 'REPO_MIRROR_LOCATION'."
+    echo "Runs 'repo-sync' and 'repo-lfs-fetch' in \$REPO_MIRROR_LOCATION (or"
+    echo "\$PWD if not set). Furthermore, if no '.repo' directory is found, runs"
+    echo "'repo-init --mirror' to set up a new mirror."
     echo ""
     echo "Options:"
     echo "-h,--help"
