@@ -36,7 +36,7 @@ _comp_idx() {
 _complete_git_remote_checkout() {
     local cur=${COMP_WORDS[COMP_CWORD]}
     local opts="-h --help -r --rebase -t --track --no-track"
-    local remotes=$(compgen -W "$(git config x.remotes)" -S /)
+    local remotes=$(compgen -W "$REPO_REMOTES" -S /)
     COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
 }
 complete -F _complete_git_remote_checkout -o nospace git-remote-checkout
@@ -48,7 +48,7 @@ _complete_git_remote_dup() {
     if [ "$(_comp_idx)" -eq 0 ]; then
         remotes="$(git remote)"
     else
-        remotes="$(git config x.remotes)"
+        remotes="$REPO_REMOTES"
     fi
     COMPREPLY=($(compgen -W "$opts $remotes" -- $cur))
 }
@@ -88,7 +88,7 @@ _complete-repo-fetch() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts="-h --help"
     local names=$(repo list -nr "^$cur" 2>/dev/null)
-    local remotes="origin upstream $(git config x.remotes)"
+    local remotes="origin upstream $REPO_REMOTES"
     COMPREPLY+=($(compgen -W "$opts $names $remotes" -- "$cur"))
 }
 

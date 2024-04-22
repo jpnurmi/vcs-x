@@ -11,19 +11,25 @@ $ git clone --recurse-submodules https://github.com/jpnurmi/vcs-x.git ~/.vcs-x
 $ echo 'source ~/.vcs-x/vcs-x.sh' >> ~/.bashrc
 ```
 
+## Environment
+
+- `REPO_MANIFEST_URL`: remote repo URL
+- `REPO_MIRROR_LOCATION`: local mirror path
+- `REPO_REMOTES`: common remote names
+
 ## Usage
 
 ### `git-remote-dup`
 
 Duplicates a Git remote. Commonly used remote names can be specified via the
-`x.remotes` Git config variable.
+`REPO_REMOTES` environment variable.
 
 ```sh
 $ git remote -v
 origin	git@github.com:jpnurmi/vcs-x.git (fetch)
 origin	git@github.com:jpnurmi/vcs-x.git (push)
 
-$ git config --global x.remotes "foo bar"
+$ export REPO_REMOTES="foo bar"
 
 $ git-remote-dup origin <TAB><TAB>
 bar      foo      -h       --help   --https  --ssh
