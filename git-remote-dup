@@ -14,8 +14,8 @@ usage() {
 opts=$(getopt --options "hq" --longoptions "help,fetch,https,ssh,quiet" --name "$(basename $0)" -- "$@") || usage 1
 eval set -- "$opts"
 
-fetch=$(git config x.fetch || echo false)
-proto=$(git config x.proto || echo auto)
+fetch=false
+proto=auto
 quiet=false
 
 set -e
