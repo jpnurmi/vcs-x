@@ -116,6 +116,13 @@ _complete-repo-help() {
     COMPREPLY=($(compgen -W "$opts" -- "$cur"))
 }
 
+_complete-repo-ignore() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="-h --help"
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
+    COMPREPLY+=($(compgen -W "$opts $names" -- "$cur"))
+}
+
 _complete-repo-manifest() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
@@ -205,6 +212,13 @@ _complete-repo-sync() {
     _complete-repo-manifest
 }
 
+_complete-repo-unignore() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local opts="-h --help"
+    local names=$(repo list -nr "^$cur" 2>/dev/null)
+    COMPREPLY+=($(compgen -W "$opts $names" -- "$cur"))
+}
+
 complete -F _complete-repo-cd repo-cd
 complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-checkout repo-checkout
@@ -212,6 +226,7 @@ complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-project repo-diff
 complete -F _complete-repo-fetch repo-fetch
 complete -F _complete-repo-forall repo-forall
+complete -F _complete-repo-ignore repo-ignore
 complete -F _complete-repo-init repo-init
 complete -F _complete-repo-mirror repo-mirror
 complete -F _complete-repo-project repo-lfs-fetch
@@ -220,3 +235,4 @@ complete -F _complete-repo-help repo-reset
 complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
 complete -F _complete-repo-sync repo-sync
+complete -F _complete-repo-unignore repo-unignore

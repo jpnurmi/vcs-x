@@ -1,9 +1,9 @@
 #!/bin/sh
 
 function usage() {
-    echo "Usage: $(basename $0) [options] <files>"
+    echo "Usage: $(basename $0) [options] [<projects>] <files>"
     echo ""
-    echo "Ignores files for 'repo-status'."
+    echo "Ignores files for 'repo-status' for all/specified projects."
     echo ""
     echo "For example:"
     echo "$ $(basename $0) package-lock.json"
@@ -30,7 +30,21 @@ while true; do
     esac
 done
 
-[ $# -gt 0 ] || usage 1
+function is_project() {
+    repo list -n | grep -q -w -F "$1"
+}
 
-patterns=$(echo "$@" | sed 's/ /\\|/g')
-repo forall -c 'git ls-files | grep -E '$patterns' | xargs git update-index --assume-unchanged'
+projects=()
+patterns=()
+for opt in "$@"; do
+    if is_project "$opt"; then
+        projects+=("$opt")
+    else
+        patterns+=("$opt")
+    fi
+done
+
+[ ${#patterns[@]} -gt 0 ] || usage 1
+
+patterns=$(echo "${patterns[@]}" | sed 's/ /\\|/g')
+repo forall "${projects[@]}" -c 'git ls-files | grep -E '$patterns' | xargs git update-index --assume-unchanged'

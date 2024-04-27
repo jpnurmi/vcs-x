@@ -1,9 +1,9 @@
 #!/bin/sh
 
 function usage() {
-    echo "Usage: $(basename $0) [options] [<files>]"
+    echo "Usage: $(basename $0) [options] [<projects>] [<files>]"
     echo ""
-    echo "Unignores files for 'repo status'."
+    echo "Unignores files for 'repo status' for all/specified projects."
     echo ""
     echo "For example:"
     echo "$ $(basename $0) package-lock.json"
@@ -30,9 +30,23 @@ while true; do
     esac
 done
 
-patterns=$(echo "$@" | sed 's/ /\\|/g')
+function is_project() {
+    repo list -n | grep -q -w -F "$1"
+}
+
+projects=()
+patterns=()
+for opt in "$@"; do
+    if is_project "$opt"; then
+        projects+=("$opt")
+    else
+        patterns+=("$opt")
+    fi
+done
+
+patterns=$(echo "${patterns[@]}" | sed 's/ /\\|/g')
 if [ -n "$patterns" ]; then
-    repo forall -c 'git ls-files | grep -E "'$patterns'" | xargs git update-index --no-assume-unchanged'
+    repo forall "${projects[@]}" -c 'git ls-files | grep -E "'$patterns'" | xargs git update-index --no-assume-unchanged'
 else
-    repo forall -c 'git ls-files -v | grep "^[[:lower:]]" | cut -c3- | xargs git update-index --no-assume-unchanged'
+    repo forall "${projects[@]}" -c 'git ls-files -v | grep "^[[:lower:]]" | cut -c3- | xargs git update-index --no-assume-unchanged'
 fi
