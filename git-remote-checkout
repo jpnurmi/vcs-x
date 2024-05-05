@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function usage() {
     echo "Usage: $(basename $0) [options] [<branch>] <remote/branch>"

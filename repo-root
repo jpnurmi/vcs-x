@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 dir="$(realpath ${1:-$PWD})"
 cur="$dir"
