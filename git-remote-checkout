@@ -70,5 +70,5 @@ else
 fi
 
 if [ -n "$rebase" ]; then
-    git rebase $rebase
+    git rebase --autostash $rebase
 fi
