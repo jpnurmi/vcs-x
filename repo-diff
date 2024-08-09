@@ -35,7 +35,7 @@ while true; do
 done
 
 if [ $verbose = true ] || [ $# -gt 0 ]; then
-    repo forall "$@" -c 'd=$(git diff); [[ $d ]] && echo -e "\033[0;31m$REPO_PROJECT\033[0m" && git diff || echo -e "\033[0;32m$REPO_PROJECT\033[0m"'
+    repo forall "$@" -c 'd=$(git diff); [ -n "$d" ] && echo "\033[0;31m$REPO_PROJECT\033[0m" && git diff || echo "\033[0;32m$REPO_PROJECT\033[0m"'
 else
-    repo forall -c 'd=$(git diff); [[ $d ]] && echo -e "\033[0;31m$REPO_PROJECT\033[0m" && git diff'
+    repo forall -c 'd=$(git diff); [ -n "$d" ] && echo "\033[0;31m$REPO_PROJECT\033[0m" && git diff'
 fi

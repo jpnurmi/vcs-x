@@ -35,7 +35,7 @@ while true; do
 done
 
 if [ $verbose = true ] || [ $# -gt 0 ]; then
-    repo forall "$@" -c 'b=$(git branch --show-current); [[ -n "$b" ]] && echo "$REPO_PROJECT $(git -c color.status=always status -sb | head -n1 | sed "s/^## //" | sed "s/\.\.\./ /")" || echo "$REPO_PROJECT no branch"'
+    repo forall "$@" -c 'b=$(git branch --show-current); [ -n "$b" ] && echo "$REPO_PROJECT $(git -c color.status=always status -sb | head -n1 | sed "s/^## //" | sed "s/\.\.\./ /")" || echo "$REPO_PROJECT no branch"'
 else
-    repo forall -c 'b=$(git branch --show-current); [[ -z "$b" ]] || echo "$REPO_PROJECT $(git -c color.status=always status -sb | head -n1 | sed "s/^## //" | sed "s/\.\.\./ /")"'
+    repo forall -c 'b=$(git branch --show-current); [ -z "$b" ] || echo "$REPO_PROJECT $(git -c color.status=always status -sb | head -n1 | sed "s/^## //" | sed "s/\.\.\./ /")"'
 fi
