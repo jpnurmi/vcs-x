@@ -32,7 +32,7 @@ for opt in "$@"; do
 done
 
 if [ $verbose = true ]; then
-    repo forall ${opts[@]} -c 'echo "\r\033[KLFS fetch: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs fetch'
+    repo forall ${opts[@]} -c 'printf "\r\033[KLFS fetch: %d%% (%d/%d) %s\n" $(($REPO_I*100/$REPO_COUNT)) $REPO_I $REPO_COUNT "$REPO_PROJECT" && git lfs fetch'
 else
-    repo forall ${opts[@]} -c 'echo -n "\r\033[KLFS fetch: $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT" && git lfs fetch > /dev/null' && echo
+    repo forall ${opts[@]} -c 'printf "\r\033[KLFS fetch: %d%% (%d/%d) %s" $(($REPO_I*100/$REPO_COUNT)) $REPO_I $REPO_COUNT "$REPO_PROJECT" && git lfs fetch > /dev/null' && echo
 fi

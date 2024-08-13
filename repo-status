@@ -35,7 +35,7 @@ while true; do
 done
 
 if [ $verbose = true ] || [ $# -gt 0 ]; then
-    repo forall "$@" -c 's=$(git status --porcelain -uno); [ -n "$s" ] && echo "\033[0;31m$REPO_PROJECT\033[0m $b" && git status -uno || echo "\033[0;32m$REPO_PROJECT\033[0m nothing to commit, working tree clean"'
+    repo forall "$@" -c 's=$(git status --porcelain -uno); [ -n "$s" ] && printf "\033[0;31m%s\033[0m $b\n" "$REPO_PROJECT" && git status -uno || printf "\033[0;32m%s\033[0m nothing to commit, working tree clean\n" "$REPO_PROJECT"'
 else
-    repo forall -c 's=$(git status --porcelain -uno); [ -n "$s" ] && echo "\033[0;31m$REPO_PROJECT\033[0m $b" && git status -uno'
+    repo forall -c 's=$(git status --porcelain -uno); [ -n "$s" ] && printf "\033[0;31m%s\033[0m $b\n" "$REPO_PROJECT" && git status -uno'
 fi
