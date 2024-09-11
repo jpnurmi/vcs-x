@@ -55,7 +55,8 @@ else
     usage 1
 fi
 
-git-remote-dup --quiet --fetch origin $remote
+git-remote-dup --quiet origin $remote
+git fetch $remote $remote_branch
 
 if git checkout $local_branch; then
     if [ "$track" = true ]; then
