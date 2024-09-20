@@ -231,6 +231,7 @@ complete -F _complete-repo-init repo-init
 complete -F _complete-repo-mirror repo-mirror
 complete -F _complete-repo-project repo-lfs-fetch
 complete -F _complete-repo-project repo-lfs-pull
+complete -F _complete-repo-fetch repo-pull
 complete -F _complete-repo-help repo-reset
 complete -F _complete-repo-help repo-rev-parse
 complete -F _complete-repo-project repo-status
