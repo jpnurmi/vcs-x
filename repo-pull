@@ -33,4 +33,4 @@ for opt in "$@"; do
     esac
 done
 
-repo forall "${projects[@]}" -c 'r='"${remotes[@]}"'; f=$(echo "$r" | grep -w -F -f <(git remote)); ( [ -n "$f" ] && echo "Pulling $REPO_PROJECT..." && git pull -q "$f" ) || ( [ -n "$r" ] || ( echo "Pulling $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..." && git pull -q ) )'
+repo forall "${projects[@]}" -c 'r='"${remotes[@]}"'; f=$(echo "$r" | grep -w -F -f <(git remote)); ( [ -n "$f" ] && echo "Pulling $REPO_PROJECT..." && git pull "$f" ) || ( [ -n "$r" ] || ( echo "Pulling $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..." && git pull ) )'
