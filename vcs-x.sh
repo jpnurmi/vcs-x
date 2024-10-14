@@ -12,6 +12,14 @@ repo-cd() {
         if [ -z "$project" ]; then
             cd "$root" || return 1
         else
+            IFS=':' read -r -a key_values <<< "$REPO_ALIASES"
+            for key_value in "${key_values[@]}"; do
+                IFS='=' read -r alias path <<< "$key_value"
+                if [ "$project" = "$alias" ]; then
+                    cd "$root/$path" || return 1
+                    return 0
+                fi
+            done
             local path=$(repo list -p "$project")
             cd "$root/$path" || return 1
         fi
@@ -20,16 +28,6 @@ repo-cd() {
 export -f repo-cd
 alias rcd='repo-cd'
 complete -F _complete_alias rcd
-
-repo-fcd() {
-    local dir=$(find $(repo-root) -type d -path "*/$1" -print | head -n 1)
-    if [ -n "$dir" ]; then
-        cd "$dir"
-    fi
-}
-export -f repo-fcd
-alias rfcd='repo-fcd'
-complete -F _complete_alias rfcd
 
 _comp_idx() {
     local idx=0
@@ -84,13 +82,13 @@ complete -F _complete_git_remote_tidy git-remote-tidy
 _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local names=$(repo list -nr "^$cur" 2>/dev/null)
-    COMPREPLY=($(compgen -W "$names" -- "$cur"))
-}
-
-_complete-repo-fcd() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local paths=$(find $(repo-root) -type d -path "*/$cur*" -print | sed -n 's|.*\('"$cur"'.*\)|\1|p' | sort | uniq)
-    COMPREPLY=($(compgen -W "$paths" -- "$cur"))
+    local aliases=
+    IFS=':' read -r -a key_values <<< "$REPO_ALIASES"
+    for key_value in "${key_values[@]}"; do
+        IFS='=' read -r alias path <<< "$key_value"
+        aliases="$aliases $alias"
+    done
+    COMPREPLY=($(compgen -W "$names $aliases" -- "$cur"))
 }
 
 _complete-repo-checkout() {
@@ -236,7 +234,6 @@ _complete-repo-unignore() {
 }
 
 complete -F _complete-repo-cd repo-cd
-complete -F _complete-repo-fcd repo-fcd
 complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-checkout repo-checkout
 complete -F _complete-repo-help repo-clean
