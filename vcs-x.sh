@@ -12,14 +12,14 @@ repo-cd() {
         if [ -z "$project" ]; then
             cd "$root" || return 1
         else
-            IFS=':' read -r -a key_values <<< "$REPO_ALIASES"
-            for key_value in "${key_values[@]}"; do
-                IFS='=' read -r alias path <<< "$key_value"
-                if [ "$project" = "$alias" ]; then
-                    cd "$root/$path" || return 1
-                    return 0
-                fi
-            done
+            if [ -f ~/.rcd ]; then
+                while read -r alias path; do
+                    if [ "$project" = "$alias" ]; then
+                        cd "$root/$path" || return 1
+                        return 0
+                    fi
+                done < ~/.rcd
+            fi
             local path=$(repo list -p "$project")
             cd "$root/$path" || return 1
         fi
@@ -83,11 +83,11 @@ _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local names=$(repo list -nr "^$cur" 2>/dev/null)
     local aliases=
-    IFS=':' read -r -a key_values <<< "$REPO_ALIASES"
-    for key_value in "${key_values[@]}"; do
-        IFS='=' read -r alias path <<< "$key_value"
-        aliases="$aliases $alias"
-    done
+    if [ -f ~/.rcd ]; then
+        while read -r alias path; do
+            aliases="$aliases $alias"
+        done < ~/.rcd
+    fi
     COMPREPLY=($(compgen -W "$names $aliases" -- "$cur"))
 }
 
