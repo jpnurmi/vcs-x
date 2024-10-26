@@ -21,7 +21,7 @@ repo-cd() {
                 done < ~/.rcd
             fi
             local path=$(repo list -p "$project")
-            cd "$root/$path" || return 1
+            test -n "$path" && cd "$root/$path" || return 1
         fi
     fi
 }
