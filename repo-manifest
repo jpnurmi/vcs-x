@@ -1,0 +1,73 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+    echo "Usage: $(basename $0) [options] [<path>]"
+    echo ""
+    echo "Options:"
+    echo "-h,--help"
+    echo "-o,--output <path>"
+    exit $1
+}
+
+opts=$(getopt --options "ho:" --longoptions "help,output:" --name "$(basename $0)" -- "$@") || usage 1
+eval set -- "$opts"
+
+set -e
+
+output=
+
+while true; do
+    case "$1" in
+        -h|--help)
+            usage 0
+            ;;
+        -o|--output)
+            output="$2"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+    esac
+done
+
+root=$(repo-root "${1:-$PWD}")
+
+mirror=$(git --git-dir $root/.repo/manifests.git config repo.mirror || echo false)
+if [[ "$mirror" == "false" ]]; then
+    opts=(-r)
+    [ -n "$output" ] && opts+=(-o "$output")
+    repo manifest "${opts[@]}"
+    exit
+fi
+
+output="${output:-/dev/stdout}"
+manifest="$root/.repo/manifest.xml"
+
+function process_manifest() {
+    local current=$1
+    while IFS= read -r line; do
+        if [[ $line =~ "<include" ]]; then
+            include=$(echo "$line" | grep -oP 'name="\K[^"]+')
+            process_manifest "$root/.repo/manifests/$include"
+        elif [[ $line =~ "<project" ]]; then
+            project=$(echo "$line" | grep -oP 'name="\K[^"]+')
+            revision=$(git --git-dir="$root/$project.git" rev-parse HEAD)
+            if [[ $line =~ revision= ]]; then
+                # replace
+                line=$(echo "$line" | sed "s|revision=\"[^\"]*\"|revision=\"$revision\"|")
+            else
+                # insert
+                line=$(echo "$line" | sed "s|<project|<project revision=\"$revision\"|")
+            fi
+            echo "$line" >> "$output"
+        elif [[ $line =~ ^[[:space:]] || "$current" == "$manifest" ]]; then
+            echo "$line" >> "$output"
+        fi
+    done < "$current"
+}
+
+process_manifest "$manifest"
