@@ -148,8 +148,10 @@ _complete-repo-manifest-name() {
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     case "$prev" in
         -m|--manifest-name)
+            local dirs=$(compgen -A directory -S / -- $cur)
             local files=$(compgen -A file -X '!*.xml' -- $cur)
-            COMPREPLY+=($(compgen -W "$files" -- "$cur"))
+            COMPREPLY+=($(compgen -W "$dirs $files" -- "$cur"))
+            compopt -o nospace
             ;;
     esac
 }
