@@ -5,6 +5,10 @@ export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"
 srcdir=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
 source "$srcdir/complete-alias/complete_alias"
 
+_is_project() {
+    repo list -n | grep -q -w -F "$1"
+}
+
 repo-cd() {
     local root=$(repo-root 2>/dev/null)
     if [ -n "$root" ]; then
@@ -13,9 +17,13 @@ repo-cd() {
             cd "$root" || return 1
         else
             if [ -f ~/.rcd ]; then
-                while read -r alias path; do
+                while read -r alias value; do
                     if [ "$project" = "$alias" ]; then
-                        cd "$root/$path" || return 1
+                        if _is_project "$value"; then
+                            repo-cd "$value" || return 1
+                        else
+                            cd "$root/$value" || return 1
+                        fi
                         return 0
                     fi
                 done < ~/.rcd
