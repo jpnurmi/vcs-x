@@ -14,6 +14,7 @@ repo-cd() {
     if [ -n "$root" ]; then
         local project="${1%%/*}"
         local suffix="${1#*/}"
+        [[ "$1" == */* ]] || suffix=
         if [ -z "$project" ]; then
             cd "$root" || return 1
         else
