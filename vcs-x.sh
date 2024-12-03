@@ -12,7 +12,8 @@ _is_project() {
 repo-cd() {
     local root=$(repo-root 2>/dev/null)
     if [ -n "$root" ]; then
-        local project="$1"
+        local project="${1%%/*}"
+        local suffix="${1#*/}"
         if [ -z "$project" ]; then
             cd "$root" || return 1
         else
@@ -20,22 +21,22 @@ repo-cd() {
                 while read -r alias value; do
                     if [ "$project" = "$alias" ]; then
                         if _is_project "$value"; then
-                            repo-cd "$value" || return 1
+                            repo-cd "$value/$suffix" || return 1
                         else
-                            cd "$root/$value" || return 1
+                            cd "$root/$value/$suffix" || return 1
                         fi
                         return 0
                     fi
                 done < ~/.rcd
             fi
             local path=$(repo list -p "$project")
-            test -n "$path" && cd "$root/$path" || return 1
+            test -n "$path" && cd "$root/$path/$suffix" || return 1
         fi
     fi
 }
 export -f repo-cd
 alias rcd='repo-cd'
-complete -F _complete_alias rcd
+complete -F _complete_alias -o nospace rcd
 
 _comp_idx() {
     local idx=0
@@ -89,14 +90,28 @@ complete -F _complete_git_remote_tidy git-remote-tidy
 
 _complete-repo-cd() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local names=$(repo list -nr "^$cur" 2>/dev/null)
-    local aliases=
+    local prefix="${cur%%/*}"
+    local root="$(repo-root 2>/dev/null)"
+    local dirs=
+    local names=$(repo list -nr "^$prefix" 2>/dev/null)
+    for name in $names; do
+        local path=$(repo list -p "$name")
+        local suffix="${cur#"$name/"}"
+        local dir=$(cd "$root/$path" 2>/dev/null && compgen -A directory -P $name/ -S / -- $suffix)
+        dirs="$dirs $dir"
+    done
     if [ -f ~/.rcd ]; then
         while read -r alias path; do
-            aliases="$aliases $alias"
+            if [[ "$cur" == "$alias/"* ]]; then
+                local suffix="${cur#"$alias/"}"
+                local dir=$(cd "$root/$path" 2>/dev/null && compgen -A directory -P $alias/ -S / -- $suffix)
+                dirs="$dirs $dir"
+            else
+                dirs="$dirs $alias/"
+            fi
         done < ~/.rcd
     fi
-    COMPREPLY=($(compgen -W "$names $aliases" -- "$cur"))
+    COMPREPLY=($(compgen -W "$names $dirs" -- "$cur"))
 }
 
 _complete-repo-checkout() {
@@ -249,7 +264,7 @@ _complete-repo-unignore() {
     COMPREPLY+=($(compgen -W "$opts $names" -- "$cur"))
 }
 
-complete -F _complete-repo-cd repo-cd
+complete -F _complete-repo-cd -o nospace repo-cd
 complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-checkout repo-checkout
 complete -F _complete-repo-help repo-clean
