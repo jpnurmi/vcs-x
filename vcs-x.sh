@@ -94,13 +94,15 @@ _complete-repo-cd() {
     local prefix="${cur%%/*}"
     local root="$(repo-root 2>/dev/null)"
     local dirs=
-    local names=$(repo list -nr "^$prefix" 2>/dev/null)
-    for name in $names; do
-        local path=$(repo list -p "$name")
-        local suffix="${cur#"$name/"}"
-        local dir=$(cd "$root/$path" 2>/dev/null && compgen -A directory -P $name/ -S / -- $suffix)
-        dirs="$dirs $dir"
-    done
+    while IFS=" : " read -r path name; do
+        if [[ "$cur" == "$name/"* ]]; then
+            local suffix="${cur#"$name/"}"
+            local dir=$(cd "$root/$path" 2>/dev/null && compgen -A directory -P $name/ -S / -- $suffix)
+            dirs="$dirs $dir"
+        else
+            dirs="$dirs $name/"
+        fi
+    done < <(repo list -npr "^$prefix" 2>/dev/null)
     if [ -f ~/.rcd ]; then
         while read -r alias path; do
             if [[ "$cur" == "$alias/"* ]]; then
