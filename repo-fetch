@@ -33,4 +33,18 @@ for opt in "$@"; do
     esac
 done
 
-repo forall "${projects[@]}" -c 'r='"${remotes[@]}"'; f=$(echo "$r" | grep -w -F -f <(git remote)); ( [ -n "$f" ] && echo "Fetching $REPO_PROJECT..." && git fetch --multiple "$f" ) || ( [ -n "$r" ] || ( echo "Fetching $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..." && git fetch --all ) )'
+repo forall "${projects[@]}" -c '
+    rr=""
+    for r in '"${remotes[@]}"'; do
+        if git remote | grep -q -w -F "$r"; then
+            [ -z "$rr" ] && rr="$r" || rr="$rr $r"
+        fi
+    done
+    if [ -n "$rr" ]; then
+        echo "Fetching $REPO_PROJECT..."
+        git fetch --multiple "$rr"
+    elif [ -z '"${remotes[@]}"' ]; then
+        echo "Fetching $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..."
+        git fetch --all
+    fi
+'
