@@ -2,6 +2,8 @@
 
 set -e
 
+lfs=
+sync=
 repo_mirror_location=${REPO_MIRROR_LOCATION:-$PWD}
 
 function usage() {
@@ -14,13 +16,27 @@ function usage() {
     echo "Options:"
     echo "-h,--help"
     echo "-j,--jobs <jobs>"
+    echo "--sync"
+    echo "--lfs"
     exit $1
 }
 
+opts=()
 for opt in "$@"; do
     case "$opt" in
         -h|--help)
             usage
+            ;;
+        --sync)
+            sync=true
+            shift
+            ;;
+        --lfs)
+            lfs=true
+            shift
+            ;;
+        *)
+            opts+=("$opt")
             ;;
     esac
 done
@@ -33,6 +49,21 @@ else
     cd "$repo_mirror_location"
 fi
 
-echo "Syncing $repo_mirror_location..."
-repo-sync "$@"
-repo-lfs-fetch "$@"
+if [ -z "$sync" ] && [ -z "$lfs" ]; then
+    sync=true
+    lfs=true
+elif [ -z "$sync" ]; then
+    [ -z "$lfs" ] && sync=true || sync=false
+elif [ -z "$lfs" ]; then
+    [ -z "$sync" ] && lfs=true || lfs=false
+fi
+
+if [ $sync = true ]; then
+    echo "Syncing $repo_mirror_location..."
+    repo-sync "${opts[@]}"
+fi
+
+if [ $lfs = true ]; then
+    echo "Fetching LFS $repo_mirror_location..."
+    repo-lfs-fetch "${opts[@]}"
+fi
