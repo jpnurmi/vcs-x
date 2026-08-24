@@ -6,8 +6,10 @@ function usage() {
     echo "Usage: $(basename $0) [ref/file]"
     echo ""
     echo "Runs 'git checkout' in all projects."
+    echo "Checks out each project's manifest branch/revision when no ref/file is given."
     echo ""
     echo "For example:"
+    echo "$ $(basename $0)"
     echo "$ $(basename $0) master"
     echo ""
     echo "Can be combined with 'repo-rev-parse'. For example:"
@@ -31,7 +33,9 @@ for opt in "$@"; do
     esac
 done
 
-if [ $# -eq 1 ] && [ -f "$1" ]; then
+if [ $# -eq 0 ]; then
+    repo forall -c 'git checkout "$REPO_RREV"'
+elif [ $# -eq 1 ] && [ -f "$1" ]; then
     while read -r project sha1; do
         pushd $project
         git checkout $sha1 || break

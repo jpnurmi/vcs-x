@@ -107,9 +107,11 @@ foundation/arkui/ace_engine$ repo-cd # repo root
 
 ### `repo-checkout`
 
-Runs `git checkout` in all projects.
+Runs `git checkout` in all projects. Without an argument, checks out the branch
+or revision specified for each project in the manifest.
 
 ```sh
+$ repo-checkout
 $ repo-rev-parse > sha1.txt
 $ repo-checkout sha1.txt
 ```
