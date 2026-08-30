@@ -1,9 +1,25 @@
 #!/bin/bash
 
-export PATH="$(dirname "${BASH_SOURCE:-$0}"):$PATH"
+if [ -n "${ZSH_VERSION:-}" ]; then
+    _vcs_x_source="$0"
+else
+    _vcs_x_source="${BASH_SOURCE[0]}"
+fi
+_vcs_x_dir=$(cd -- "$(dirname -- "$_vcs_x_source")" && pwd)
+export PATH="$_vcs_x_dir:$PATH"
 
-srcdir=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)
-source "$srcdir/complete-alias/complete_alias"
+if [ -n "${BASH_VERSION:-}" ]; then
+    source "$_vcs_x_dir/complete-alias/complete_alias"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    if ! command -v compdef >/dev/null; then
+        autoload -Uz compinit && compinit
+    fi
+    if ! command -v complete >/dev/null; then
+        autoload -Uz bashcompinit && bashcompinit
+    fi
+fi
+
+unset _vcs_x_source _vcs_x_dir
 
 _is_project() {
     repo list -n | grep -q -w -F "$1"
@@ -35,9 +51,15 @@ repo-cd() {
         fi
     fi
 }
-export -f repo-cd
+if [ -n "${BASH_VERSION:-}" ]; then
+    export -f repo-cd
+fi
 alias rcd='repo-cd'
-complete -F _complete_alias -o nospace rcd
+if [ -n "${BASH_VERSION:-}" ]; then
+    complete -F _complete_alias -o nospace rcd
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    complete -F _complete-repo-cd -o nospace rcd
+fi
 
 _comp_idx() {
     local idx=0
