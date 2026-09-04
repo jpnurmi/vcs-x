@@ -34,7 +34,7 @@ for opt in "$@"; do
 done
 
 if [ $# -eq 0 ]; then
-    repo forall -c 'git checkout "$REPO_RREV"'
+    repo forall -p -c 'git checkout "$REPO_RREV"'
 elif [ $# -eq 1 ] && [ -f "$1" ]; then
     while read -r project sha1; do
         pushd $project

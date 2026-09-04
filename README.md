@@ -253,7 +253,8 @@ arkui_napi nothing to commit, working tree clean
 
 ### `repo-sync`
 
-`repo sync` with auto-completion.
+`repo sync` with auto-completion, followed by recursive Git submodule
+synchronization.
 
 ```sh
 $ repo-sync -<TAB><TAB>
