@@ -3,7 +3,8 @@
 function usage() {
     echo "Usage: $(basename $0) [options] [<projects>] [<remotes>]"
     echo ""
-    echo "Runs 'git pull' for all/specified projects and remotes."
+    echo "Runs 'git pull' for all/specified projects and remotes,"
+    echo "followed by recursive Git submodule update."
     echo ""
     echo "Options:"
     echo "-h,--help"
@@ -34,6 +35,10 @@ for opt in "$@"; do
 done
 
 repo forall "${projects[@]}" -c '
+    update_submodules() {
+        git submodule sync --quiet --recursive &&
+        git submodule update --init --recursive
+    }
     rr=""
     for r in '"${remotes[@]}"'; do
         if git remote | grep -q -w -F "$r"; then
@@ -42,9 +47,9 @@ repo forall "${projects[@]}" -c '
     done
     if [ -n "$rr" ]; then
         echo "Pulling $REPO_PROJECT..."
-        git pull "$rr"
+        git pull "$rr" && update_submodules
     elif [ -z '"${remotes[@]}"' ]; then
         echo "Pulling $(($REPO_I*100/$REPO_COUNT))% ($REPO_I/$REPO_COUNT) $REPO_PROJECT..."
-        git pull
+        git pull && update_submodules
     fi
 '
