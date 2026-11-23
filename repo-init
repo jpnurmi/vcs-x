@@ -3,8 +3,14 @@
 set -e
 
 opts=()
+groups=false
 while [ $# -gt 0 ]; do
     case "$1" in
+        -g*|--groups|--groups=*)
+            groups=true
+            opts+=("$1")
+            shift
+            ;;
         -m|--manifest-name)
             opts+=("$1" $(realpath "$2"))
             shift 2
@@ -19,5 +25,12 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+# preserve existing groups, except platform groups that repo re-adds
+if [ $groups = false ] && root=$(repo-root 2>/dev/null); then
+    current=$(git config -f "$root/.repo/manifests.git/config" manifest.groups || true)
+    current=$(echo "$current" | tr ',' '\n' | grep -v '^platform-' | paste -sd, -)
+    [ -z "$current" ] || opts+=(--groups="$current")
+fi
 
 repo init ${opts[@]}

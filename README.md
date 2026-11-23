@@ -157,7 +157,8 @@ nothing to commit (working directory clean)
 
 ### `repo-init`
 
-Same as `repo init` but with auto-completion:
+Same as `repo init` but with auto-completion, and existing groups are
+preserved unless `-g/--groups` is given:
 
 ```sh
 $ repo-init -<TAB><TAB>
