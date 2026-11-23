@@ -148,14 +148,11 @@ Ignores files for `repo-status`.
 
 ```sh
 $ repo-status
-some_project
-Not currently on any branch.
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   package-lock.json
+project some_project/                           (*** NO BRANCH ***)
+ -m	package-lock.json
 $ repo-ignore package-lock.json
 $ repo-status
+nothing to commit (working directory clean)
 ```
 
 ### `repo-init`
@@ -239,16 +236,14 @@ $ repo-checkout sha1.txt
 
 ### `repo-status`
 
-Runs `git status` in all/specified projects.
+`repo status` for all/specified projects, including Git submodules.
 
 ```sh
-$ repo-status ark<TAB><TAB>
-arkcompiler_ets_frontend     arkcompiler_runtime_core     arkui_ace_engine             arkui_advanced_ui_component  arkui_ui_appearance          
-arkcompiler_ets_runtime      arkcompiler_toolchain        arkui_ace_engine_lite        arkui_napi                   arkui_ui_lite
-
-$ repo-status arkui_ace_engine arkui_napi
-arkui_ace_engine nothing to commit, working tree clean
-arkui_napi nothing to commit, working tree clean
+$ repo-status sentry-native
+project sentry-native/                          branch master
+ -m	external/crashpad
+project sentry-native/external/crashpad/        (*** NO BRANCH ***)
+ -m	util/misc/capture_context_linux.S
 ```
 
 ### `repo-sync`
@@ -272,12 +267,9 @@ Unignores files for `repo-status`.
 
 ```sh
 $ repo-status
+nothing to commit (working directory clean)
 $ repo-unignore package-lock.json
 $ repo-status
-some_project
-Not currently on any branch.
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git restore <file>..." to discard changes in working directory)
-	modified:   package-lock.json
+project some_project/                           (*** NO BRANCH ***)
+ -m	package-lock.json
 ```

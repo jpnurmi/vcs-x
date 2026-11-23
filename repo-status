@@ -1,19 +1,16 @@
 #!/bin/bash
 
-verbose=false
-
 function usage() {
     echo "Usage: $(basename $0) [options] [<projects>]"
     echo ""
-    echo "Runs 'git status' in all/specified projects."
+    echo "Runs 'repo status' in all/specified projects, including Git submodules."
     echo ""
     echo "Options:"
     echo "-h,--help"
-    echo "-v,--verbose"
     exit $1
 }
 
-opts=$(getopt --options "hv" --longoptions "help,verbose" --name "$(basename $0)" -- "$@") || usage 1
+opts=$(getopt --options "h" --longoptions "help" --name "$(basename $0)" -- "$@") || usage 1
 eval set -- "$opts"
 
 set -e
@@ -23,10 +20,6 @@ while true; do
         -h|--help)
             usage 0
             ;;
-        -v|--verbose)
-            verbose=true
-            shift
-            ;;
         --)
             shift
             break
@@ -34,8 +27,85 @@ while true; do
     esac
 done
 
-if [ $verbose = true ] || [ $# -gt 0 ]; then
-    repo forall "$@" -c 's=$(git status --porcelain -uno); [ -n "$s" ] && printf "\033[0;31m%s\033[0m $b\n" "$REPO_PROJECT" && git status -uno || printf "\033[0;32m%s\033[0m nothing to commit, working tree clean\n" "$REPO_PROJECT"'
-else
-    repo forall -c 's=$(git status --porcelain -uno); [ -n "$s" ] && printf "\033[0;31m%s\033[0m $b\n" "$REPO_PROJECT" && git status -uno'
+if [ -t 1 ]; then
+    bold=$'\033[1m'
+    red=$'\033[31m'
+    green=$'\033[32m'
+    reset=$'\033[0m'
 fi
+
+# mimics the output format of 'repo status'
+function status() {
+    local path="$1"
+    if [ ! -d "$path" ]; then
+        echo
+        echo "project $path/"
+        echo '  missing (run "repo sync")'
+        return 0
+    fi
+
+    local branch="" entry xy file lines=()
+    while IFS= read -r -d '' entry; do
+        xy="${entry:0:2}"
+        file="${entry:3}"
+        case "$xy" in
+            "##")
+                branch="$file"
+                continue
+                ;;
+            R?|C?)
+                local src
+                IFS= read -r -d '' src
+                file="$src => $file"
+                ;;
+        esac
+        [ "$xy" = "??" ] && xy="  "
+        local i="${xy:0:1}" f="${xy:1:1}"
+        [ "$i" = " " ] && i="-"
+        [ "$f" = " " ] && f="-"
+        lines+=("$file"$'\t'" ${i^^}${f,,}")
+    done < <(git -C "$path" status --porcelain -z --branch --untracked-files=all)
+
+    local ab=""
+    if [[ "$branch" =~ \[(ahead|behind).*\]$ ]]; then
+        ab=" ${BASH_REMATCH[0]}"
+    fi
+    branch="${branch%% \[*}"
+    branch="${branch%%...*}"
+    branch="${branch#No commits yet on }"
+    [ "$branch" = "HEAD (no branch)" ] && branch=""
+
+    [ ${#lines[@]} -eq 0 ] && [ -z "$branch" ] && return 1
+
+    local header
+    header=$(printf "project %-40s" "$path/ ")
+
+    if [ -n "$branch" ]; then
+        echo "$bold${header}branch $branch$ab$reset"
+    else
+        echo "$bold$header$reset$red(*** NO BRANCH ***)$reset"
+    fi
+
+    local line
+    while IFS=$'\t' read -r file xy; do
+        if [ "${xy:2:1}" = "-" ] && [ "${xy:1:1}" != "-" ]; then
+            line="$green$xy"$'\t'"$file$reset"
+        else
+            line="$red$xy"$'\t'"$file$reset"
+        fi
+        echo "$line"
+    done < <([ ${#lines[@]} -gt 0 ] && printf "%s\n" "${lines[@]}" | LC_ALL=C sort)
+}
+
+cd "$(repo-root)"
+
+clean=true
+while IFS= read -r project; do
+    status "$project" && clean=false
+    [ -d "$project" ] || continue
+    while IFS= read -r submodule; do
+        status "$project/$submodule" && clean=false
+    done < <(git -C "$project" submodule foreach --quiet --recursive 'echo "$displaypath"')
+done < <(repo list --path-only "$@")
+
+[ $clean = false ] || echo "nothing to commit (working directory clean)"
