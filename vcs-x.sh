@@ -290,7 +290,6 @@ _complete-repo-unignore() {
 }
 
 complete -F _complete-repo-cd -o nospace repo-cd
-complete -F _complete-repo-project repo-branch
 complete -F _complete-repo-checkout repo-checkout
 complete -F _complete-repo-help repo-clean
 complete -F _complete-repo-project repo-diff

@@ -78,20 +78,6 @@ To github.com:jpnurmi/vcs-x.git
  - [deleted]         bar
 ```
 
-### `repo-branch`
-
-Runs `git branch` in all/specified projects.
-
-```sh
-$ repo-branch ark<TAB><TAB>
-arkcompiler_ets_frontend     arkcompiler_runtime_core     arkui_ace_engine             arkui_advanced_ui_component  arkui_ui_appearance          
-arkcompiler_ets_runtime      arkcompiler_toolchain        arkui_ace_engine_lite        arkui_napi                   arkui_ui_lite
-
-$ repo-branch arkui_ace_engine arkui_napi
-arkui_ace_engine master
-arkui_napi no branch
-```
-
 ### `repo-cd`
 
 Changes directory to the project or root.
@@ -238,12 +224,13 @@ $ repo-checkout sha1.txt
 ### `repo-status`
 
 `repo status` for all/specified projects, including Git submodules.
+With `-v`, also shows upstreams and clean projects without a branch.
 
 ```sh
 $ repo-status sentry-native
 project sentry-native/                          branch master
  -m	external/crashpad
-project sentry-native/external/crashpad/        (*** NO BRANCH ***)
+        external/crashpad/                      (*** NO BRANCH ***)
  -m	util/misc/capture_context_linux.S
 ```
 
